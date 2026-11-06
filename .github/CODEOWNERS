@@ -1,0 +1,17 @@
+# General backend ownership
+/backend/ @YOUR-GITHUB-USERNAME
+
+# Individual module owners
+/backend/app/auth/ @MEMBER-A
+/backend/app/users/ @MEMBER-B
+/backend/app/items/ @MEMBER-C
+/backend/app/claims/ @MEMBER-D
+
+# Frontend ownership
+/frontend/ @MEMBER-E @MEMBER-F
+
+# Documentation ownership
+/documentation/ @MEMBER-G @MEMBER-H
+
+# Testing ownership
+/backend/tests/ @MEMBER-I
