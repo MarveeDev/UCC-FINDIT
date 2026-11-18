@@ -35,16 +35,30 @@ def create_app(config_name="default"):
 
 def _register_blueprints(app):
     from app.auth.routes import auth_bp
+    from app.feed.routes import feed_bp
+    from app.items.routes import items_bp
+    from app.locations.routes import locations_bp
+    from app.notifications.routes import notifications_bp
+    from app.uploads.routes import uploads_bp
     from app.users.routes import users_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
+    app.register_blueprint(locations_bp)
+    app.register_blueprint(items_bp)
+    app.register_blueprint(feed_bp)
+    app.register_blueprint(notifications_bp)
+    app.register_blueprint(uploads_bp)
 
 
 def _register_models():
     # Importing the model modules ensures they are registered with SQLAlchemy
     # (and therefore visible to Flask-Migrate's autogenerate).
     from app.users import models  # noqa: F401
+    from app.locations import models  # noqa: F401
+    from app.items import models  # noqa: F401
+    from app.notifications import models  # noqa: F401
+    from app.security import models  # noqa: F401
 
 
 def _register_jwt_handlers(app):

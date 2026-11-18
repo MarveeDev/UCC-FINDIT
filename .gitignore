@@ -19,6 +19,8 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+# Uploaded media (created at runtime)
+/backend/uploads/
 
 # --- Node / frontend ---
 node_modules/

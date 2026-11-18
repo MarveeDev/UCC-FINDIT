@@ -101,6 +101,23 @@ class Config:
     MAIL_FROM = os.getenv("MAIL_FROM", "noreply@uccfindit.example")
     MAIL_DEBUG = _bool(os.getenv("MAIL_DEBUG"), True)
 
+    # Image uploads
+    UPLOAD_FOLDER = os.getenv(
+        "UPLOAD_FOLDER",
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "uploads")),
+    )
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
+
+    # DB-backed rate limiting
+    LOGIN_RATE_LIMIT = int(os.getenv("LOGIN_RATE_LIMIT", "10"))
+    LOGIN_RATE_WINDOW_SECONDS = int(os.getenv("LOGIN_RATE_WINDOW_SECONDS", "60"))
+    REGISTER_RATE_LIMIT = int(os.getenv("REGISTER_RATE_LIMIT", "3"))
+    REGISTER_RATE_WINDOW_SECONDS = int(os.getenv("REGISTER_RATE_WINDOW_SECONDS", "3600"))
+    VERIFY_RATE_LIMIT = int(os.getenv("VERIFY_RATE_LIMIT", "5"))
+    VERIFY_RATE_WINDOW_SECONDS = int(os.getenv("VERIFY_RATE_WINDOW_SECONDS", "60"))
+    RESEND_RATE_LIMIT = int(os.getenv("RESEND_RATE_LIMIT", "5"))
+    RESEND_RATE_WINDOW_SECONDS = int(os.getenv("RESEND_RATE_WINDOW_SECONDS", "300"))
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
@@ -117,6 +134,7 @@ class TestingConfig(Config):
     ENFORCE_UCC_DOMAIN = False
     MAIL_DEBUG = True
     EXPOSE_OTP_IN_RESPONSE = True
+    LOGIN_RATE_LIMIT = 5
 
 
 class ProductionConfig(Config):

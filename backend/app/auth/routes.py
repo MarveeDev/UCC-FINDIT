@@ -1,8 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 from flask_jwt_extended import jwt_required
 
 from app.auth import services as auth_services
 from app.auth import validators
+from app.security.services import client_ip, enforce_rate_limit
 from app.utils import fail, ok
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
@@ -10,6 +11,12 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 @auth_bp.post("/register")
 def register():
+    enforce_rate_limit(
+        "register",
+        client_ip(),
+        current_app.config["REGISTER_RATE_LIMIT"],
+        current_app.config["REGISTER_RATE_WINDOW_SECONDS"],
+    )
     data = request.get_json(silent=True) or {}
     errors, first_name, last_name, email, password = validators.validate_registration(data)
     if errors:
@@ -26,6 +33,12 @@ def register():
 
 @auth_bp.post("/verify-email")
 def verify_email():
+    enforce_rate_limit(
+        "verify_email",
+        client_ip(),
+        current_app.config["VERIFY_RATE_LIMIT"],
+        current_app.config["VERIFY_RATE_WINDOW_SECONDS"],
+    )
     data = request.get_json(silent=True) or {}
     email = (data.get("email") or "").strip().lower()
     otp = (data.get("otp") or "").strip()
@@ -38,6 +51,12 @@ def verify_email():
 
 @auth_bp.post("/resend-otp")
 def resend_otp():
+    enforce_rate_limit(
+        "resend_otp",
+        client_ip(),
+        current_app.config["RESEND_RATE_LIMIT"],
+        current_app.config["RESEND_RATE_WINDOW_SECONDS"],
+    )
     data = request.get_json(silent=True) or {}
     email = (data.get("email") or "").strip().lower()
     if not email:
@@ -49,6 +68,12 @@ def resend_otp():
 
 @auth_bp.post("/login")
 def login():
+    enforce_rate_limit(
+        "login",
+        client_ip(),
+        current_app.config["LOGIN_RATE_LIMIT"],
+        current_app.config["LOGIN_RATE_WINDOW_SECONDS"],
+    )
     data = request.get_json(silent=True) or {}
     email = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
