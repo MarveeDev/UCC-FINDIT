@@ -1,3 +1,4 @@
+import logging
 import secrets
 from datetime import timedelta
 
@@ -9,25 +10,12 @@ from app.extensions import db
 from app.users.models import OtpVerification, User, utcnow
 from app.users.services import serialize_user
 from app.utils import ApiError
-from app.utils.mail import send_otp_email
+from app.utils.mail import EmailDeliveryError, send_otp_email
 
-
-def _ensure_email_delivery_available():
-    """Fail fast (before creating a user) when email cannot actually be sent.
-
-    In production, missing SMTP is an explicit configuration error rather than
-    a silently broken registration flow.
-    """
-    if not current_app.config.get("MAIL_DEBUG", False) and not current_app.config.get(
-        "SMTP_HOST"
-    ):
-        raise ApiError(
-            "Email delivery is not configured. Please try again later.", status=503
-        )
+logger = logging.getLogger(__name__)
 
 
 def register_user(first_name, last_name, email, password):
-    _ensure_email_delivery_available()
     if get_user(email):
         raise ApiError("An account with this email already exists", status=409)
 
@@ -38,16 +26,24 @@ def register_user(first_name, last_name, email, password):
         password_hash=generate_password_hash(password),
     )
     db.session.add(user)
-    db.session.commit()
+    db.session.flush()
 
-    otp = issue_email_otp(user)
+    try:
+        otp = issue_email_otp(user)
+    except EmailDeliveryError:
+        db.session.rollback()
+        raise ApiError(
+            "We couldn't send your verification code. Please try again.",
+            status=503,
+        )
+
     extra = {}
     if current_app.config.get("EXPOSE_OTP_IN_RESPONSE"):
         extra["dev_otp"] = otp
 
     return {
         "user": serialize_user(user),
-        "message": "Account created. Check your email for the verification code.",
+        "message": "Account created. Verify your email with the issued code.",
         "extra": extra,
     }
 
@@ -70,9 +66,23 @@ def issue_email_otp(user):
         last_sent_at=utcnow(),
     )
     db.session.add(record)
+    _deliver_otp(user.email, otp)
     db.session.commit()
-    send_otp_email(user.email, otp)
     return otp
+
+
+def _deliver_otp(email, otp):
+    """Deliver the verification code through the configured channel.
+
+    Development and testing log the code to the console (and the caller returns
+    it as ``dev_otp``). Production delivers it via the Resend email API and
+    never logs or returns the plaintext code. Raises EmailDeliveryError when
+    production delivery fails.
+    """
+    if current_app.config.get("EXPOSE_OTP_IN_RESPONSE"):
+        logger.info("[DEV OTP] verification code for %s: %s", email, otp)
+        return
+    send_otp_email(email, otp)
 
 
 def _latest_otp_record(email):
@@ -129,7 +139,15 @@ def resend_otp(email):
         db.session.delete(record)
         db.session.commit()
 
-    otp = issue_email_otp(user)
+    try:
+        otp = issue_email_otp(user)
+    except EmailDeliveryError:
+        db.session.rollback()
+        raise ApiError(
+            "We couldn't send your verification code. Please try again.",
+            status=503,
+        )
+
     extra = {}
     if current_app.config.get("EXPOSE_OTP_IN_RESPONSE"):
         extra["dev_otp"] = otp

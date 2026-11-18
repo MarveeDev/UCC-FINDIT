@@ -79,9 +79,9 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    CORS_ORIGINS = _list(os.getenv("CORS_ORIGINS"), ["http://localhost:5173"])
+    CORS_ORIGINS = _list(os.getenv("CORS_ORIGINS"), ["http://localhost:5174"])
 
-    # Email OTP settings
+    # OTP verification settings
     OTP_EXPIRY_MINUTES = int(os.getenv("OTP_EXPIRY_MINUTES", "5"))
     OTP_RESEND_COOLDOWN_SECONDS = int(os.getenv("OTP_RESEND_COOLDOWN_SECONDS", "60"))
     OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
@@ -93,13 +93,10 @@ class Config:
         os.getenv("UCC_EMAIL_DOMAINS"), ["stu.ucc.edu.gh", "ucc.edu.gh"]
     )
 
-    # Email delivery
-    SMTP_HOST = os.getenv("SMTP_HOST", "")
-    SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-    SMTP_USER = os.getenv("SMTP_USER", "")
-    SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
-    MAIL_FROM = os.getenv("MAIL_FROM", "noreply@uccfindit.example")
-    MAIL_DEBUG = _bool(os.getenv("MAIL_DEBUG"), True)
+    # Email delivery (Resend)
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+    MAIL_FROM = os.getenv("MAIL_FROM", "")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5174")
 
     # Image uploads
     UPLOAD_FOLDER = os.getenv(
@@ -126,7 +123,7 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     # Development convenience: return the OTP in the API response so the
-    # registration flow can be exercised without real email delivery.
+    # registration flow can be exercised without email delivery.
     EXPOSE_OTP_IN_RESPONSE = True
 
 
@@ -136,14 +133,12 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     JWT_SECRET_KEY = "test-jwt-secret-which-is-at-least-32-bytes-long"
     ENFORCE_UCC_DOMAIN = False
-    MAIL_DEBUG = True
     EXPOSE_OTP_IN_RESPONSE = True
     LOGIN_RATE_LIMIT = 100
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    MAIL_DEBUG = False
     EXPOSE_OTP_IN_RESPONSE = False
     REQUIRE_STRONG_SECRETS = True
 

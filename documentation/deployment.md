@@ -17,13 +17,12 @@ Target platforms: **Vercel** (frontend), **Render** (backend), **managed Postgre
 | `SECRET_KEY` | any (dev placeholder ok) | any | **strong, ≥32 chars, unique** |
 | `JWT_SECRET_KEY` | any | any | **strong, ≥32 chars, unique** |
 | `DATABASE_URL` | `postgresql+psycopg://…` (or sqlite for local) | `sqlite:///:memory:` | `postgresql+psycopg://…` (PostgreSQL required) |
-| `SMTP_HOST` | optional (dev logs OTP) | not required | **required** (else email delivery fails) |
-| `SMTP_PORT` | 587 | — | 587 |
-| `SMTP_USER` / `SMTP_PASSWORD` | optional | — | required if SMTP auth |
-| `MAIL_FROM` | `noreply@…` | — | real sender |
-| `CORS_ORIGINS` | `http://localhost:5173` | — | **frontend origin** (never `*`) |
+| `CORS_ORIGINS` | `http://localhost:5174` | — | **frontend origin** (never `*`) |
 | `ENFORCE_UCC_DOMAIN` | `false` | `false` | `true` (after domain verified) |
 | `UCC_EMAIL_DOMAINS` | `stu.ucc.edu.gh,ucc.edu.gh` | — | official domains |
+| `RESEND_API_KEY` | — (dev logs OTP) | — | **required** (Resend API key, starts `re_`) |
+| `MAIL_FROM` | — | — | **required** (verified Resend sender) |
+| `FRONTEND_URL` | `http://localhost:5174` | — | frontend origin (verification links) |
 | `UPLOAD_FOLDER` | local dir | temp | **object storage or mounted disk** |
 | `PORT` | 5000 | — | Render-provided |
 
@@ -55,7 +54,7 @@ Vercel build command: `npm run build`, output directory `dist`.
 - `FLASK_CONFIG=production` refuses to start with missing/weak `SECRET_KEY`/`JWT_SECRET_KEY`.
 - `CORS_ORIGINS` must be the exact frontend origin(s); never `*` in production.
 - Do **not** enable `X-Forwarded-For` trust unless behind a trusted reverse proxy (it is ignored by default).
-- Production email (OTP) fails explicitly if `SMTP_HOST` is unset — it is never silently dropped.
+- Verification emails are sent via the **Resend** HTTP API. In development/testing (`EXPOSE_OTP_IN_RESPONSE`), the code is logged to the console and returned as `dev_otp`; production sends it by email and never logs or returns the plaintext. `RESEND_API_KEY` and `MAIL_FROM` are required in production, otherwise registration returns `503`.
 - File uploads use local disk by default; use object storage / persistent disk on Render (the filesystem is ephemeral).
 
 ## Backup & recovery
