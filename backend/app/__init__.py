@@ -40,6 +40,7 @@ def _register_blueprints(app):
     from app.claims.routes import claims_bp, handover_bp
     from app.custody.routes import custody_bp
     from app.feed.routes import feed_bp
+    from app.health import health_bp
     from app.inspections.routes import inspections_bp
     from app.items.routes import items_bp
     from app.locations.routes import locations_bp
@@ -66,6 +67,7 @@ def _register_blueprints(app):
     app.register_blueprint(custody_bp)
     app.register_blueprint(audit_bp)
     app.register_blueprint(analytics_bp)
+    app.register_blueprint(health_bp)
 
 
 def _register_models():

@@ -1,13 +1,16 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { lazy, Suspense, useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { LayoutList, Map as MapIcon, PackageSearch, PlusCircle, Search } from 'lucide-react'
-import { ReportMap } from '../components/map/ReportMap'
 import { ReportCard } from '../components/ReportCard'
 import { Button } from '../components/ui/Button'
 import { Select } from '../components/ui/Select'
 import { ITEM_CATEGORIES } from '../constants'
 import { getFeed, getLocations } from '../lib/resources'
 import type { CampusLocation, Paginated, ReportSummary } from '../types'
+
+const ReportMap = lazy(() =>
+  import('../components/map/ReportMap').then((m) => ({ default: m.ReportMap })),
+)
 
 type Tab = 'all' | 'lost' | 'found' | 'recovered'
 
@@ -204,7 +207,13 @@ export function FeedPage() {
       {loading ? (
         <div className="py-16 text-center text-midnight/50">Loading reports…</div>
       ) : view === 'map' ? (
-        <ReportMap reports={result?.items ?? []} />
+        <Suspense
+          fallback={
+            <div className="h-[420px] w-full rounded-xl border border-midnight/15 bg-mint-soft/50" />
+          }
+        >
+          <ReportMap reports={result?.items ?? []} />
+        </Suspense>
       ) : !result || result.items.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-midnight/15 bg-white py-16 text-center">
           <PackageSearch className="h-10 w-10 text-mint" />

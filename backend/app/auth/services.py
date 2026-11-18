@@ -12,7 +12,22 @@ from app.utils import ApiError
 from app.utils.mail import send_otp_email
 
 
+def _ensure_email_delivery_available():
+    """Fail fast (before creating a user) when email cannot actually be sent.
+
+    In production, missing SMTP is an explicit configuration error rather than
+    a silently broken registration flow.
+    """
+    if not current_app.config.get("MAIL_DEBUG", False) and not current_app.config.get(
+        "SMTP_HOST"
+    ):
+        raise ApiError(
+            "Email delivery is not configured. Please try again later.", status=503
+        )
+
+
 def register_user(first_name, last_name, email, password):
+    _ensure_email_delivery_available()
     if get_user(email):
         raise ApiError("An account with this email already exists", status=409)
 

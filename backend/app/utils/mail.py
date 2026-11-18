@@ -8,9 +8,10 @@ from flask import current_app
 def send_otp_email(to_email, otp, purpose="email_verification"):
     """Send (or, in development, log) a verification code email.
 
-    When no SMTP host is configured, the message is logged to the application
-    logger so the authentication flow remains testable without a mail server.
-    Real delivery requires SMTP_HOST to be configured.
+    In development (MAIL_DEBUG), the code is logged to the application logger so
+    the authentication flow remains testable without a mail server. In
+    production, a missing SMTP host is an explicit configuration error rather
+    than a silent loss of the verification email.
     """
     app = current_app
     subject = "Your UCC FINDIT verification code"
@@ -20,7 +21,8 @@ def send_otp_email(to_email, otp, purpose="email_verification"):
         "If you did not request this code, you can safely ignore this email."
     )
 
-    if app.config.get("MAIL_DEBUG", False):
+    mail_debug = app.config.get("MAIL_DEBUG", False)
+    if mail_debug:
         app.logger.info(
             "[DEV MAIL] to=%s subject=%s otp=%s purpose=%s",
             to_email,
@@ -30,6 +32,10 @@ def send_otp_email(to_email, otp, purpose="email_verification"):
         )
 
     if not app.config.get("SMTP_HOST"):
+        if not mail_debug:
+            raise RuntimeError(
+                "Email delivery is not configured (SMTP_HOST is missing)"
+            )
         return
 
     _send_smtp(to_email, subject, body)

@@ -1,6 +1,7 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { lazy, Suspense, useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MapPicker, type MapPosition } from '../components/map/MapPicker'
+import { LocationCombobox } from '../components/LocationCombobox'
+import type { MapPosition } from '../components/map/MapPicker'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
@@ -9,6 +10,10 @@ import { ITEM_CATEGORIES } from '../constants'
 import { getErrorMessage, getFieldErrors } from '../lib/api'
 import { createReport, getLocations, uploadImage } from '../lib/resources'
 import type { CampusLocation, ReportType } from '../types'
+
+const MapPicker = lazy(() =>
+  import('../components/map/MapPicker').then((m) => ({ default: m.MapPicker })),
+)
 
 interface ReportPageProps {
   mode: ReportType
@@ -45,6 +50,10 @@ export function ReportPage({ mode }: ReportPageProps) {
     e.preventDefault()
     setError(null)
     setFieldErrors({})
+    if (!locationId) {
+      setFieldErrors({ location_id: 'Please select a campus location' })
+      return
+    }
     setSubmitting(true)
     try {
       let imagePath: string | undefined
@@ -172,27 +181,27 @@ export function ReportPage({ mode }: ReportPageProps) {
           />
         )}
 
-        <Select
+        <LocationCombobox
           id="location"
           label={locationLabel}
           value={locationId}
+          onChange={setLocationId}
+          locations={locations}
           error={fieldErrors.location_id}
-          onChange={(e) => setLocationId(e.target.value)}
           required
-        >
-          <option value="">Select a campus location</option>
-          {locations.map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.name}
-            </option>
-          ))}
-        </Select>
+        />
 
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-midnight">
             Pin the exact spot (optional)
           </label>
-          <MapPicker value={position} onChange={setPosition} />
+          <Suspense
+            fallback={
+              <div className="h-64 w-full rounded-xl border border-midnight/15 bg-mint-soft/50" />
+            }
+          >
+            <MapPicker value={position} onChange={setPosition} />
+          </Suspense>
           {position && (
             <p className="text-xs text-midnight/50">
               Pin: {position.latitude.toFixed(5)}, {position.longitude.toFixed(5)}{' '}
