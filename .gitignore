@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+*.sqlite3
+*.db
+.pytest_cache/
+.mypy_cache/
+instance/
+*.log
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+# Uploaded media (created at runtime)
+/backend/uploads/
+
+# --- Node / frontend ---
+node_modules/
+.vite/
+*.local
+
+# --- OS generated files ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Agent task prompts (not application source) ---
+/backend/Agent.md
+/frontend/Agent.md
