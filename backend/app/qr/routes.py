@@ -77,6 +77,8 @@ def report_found(token):
     data["report_type"] = "FOUND"
     if not data.get("item_name"):
         data["item_name"] = qr.item_name
+    if not data.get("location_description"):
+        data["location_description"] = data.get("description") or qr.item_name
 
     errors, cleaned = item_validators.validate_report(data)
     if errors:

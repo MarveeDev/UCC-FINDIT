@@ -34,6 +34,7 @@ def _setup(client):
             "category": "Other",
             "description": "A brown leather wallet",
             "location_id": loc["id"],
+            "location_description": "Near the campus library",
             "event_date": date.today().isoformat(),
         },
         headers=finder_headers,

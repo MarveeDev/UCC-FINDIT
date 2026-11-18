@@ -28,6 +28,7 @@ def serialize_report_public(report):
         "colour": report.colour,
         "location_id": report.location_id,
         "location_name": report.location.name if report.location else None,
+        "location_description": report.location_description,
         "latitude": report.latitude,
         "longitude": report.longitude,
         "location_latitude": report.location.latitude if report.location else None,
@@ -58,9 +59,11 @@ def serialize_report_detail(report, viewer):
 
 def build_report(reporter, data):
     """Construct and stage an ItemReport without committing (for atomic flows)."""
-    location = db.session.get(CampusLocation, data["location_id"])
-    if location is None or not location.is_active:
-        raise ApiError("Selected location is not valid", status=400)
+    location_id = data.get("location_id")
+    if location_id is not None:
+        location = db.session.get(CampusLocation, location_id)
+        if location is None or not location.is_active:
+            raise ApiError("Selected location is not valid", status=400)
 
     report = ItemReport(
         reporter_id=reporter.id,
@@ -71,7 +74,8 @@ def build_report(reporter, data):
         brand=data.get("brand"),
         colour=data.get("colour"),
         identifying_characteristics=data.get("identifying_characteristics"),
-        location_id=data["location_id"],
+        location_id=location_id,
+        location_description=data["location_description"],
         latitude=data.get("latitude"),
         longitude=data.get("longitude"),
         event_date=data["event_date"],

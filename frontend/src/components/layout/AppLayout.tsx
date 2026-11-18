@@ -5,6 +5,7 @@ import {
   Boxes,
   ClipboardList,
   FileCheck,
+  Inbox,
   LayoutDashboard,
   LogOut,
   PackageCheck,
@@ -45,6 +46,7 @@ const navItems: NavItem[] = [
   { to: '/custody', label: 'Custody', icon: PackageCheck, roles: STAFF_OR_ABOVE },
   { to: '/audit-logs', label: 'Audit Logs', icon: ScrollText, roles: MANAGER_OR_ADMIN },
   { to: '/analytics', label: 'Analytics', icon: BarChart3, roles: MANAGER_OR_ADMIN },
+  { to: '/admin/unassigned', label: 'Unassigned Reports', icon: Inbox, roles: ['SUPER_ADMIN'] },
   { to: '/notifications', label: 'Notifications', icon: Bell },
 ]
 

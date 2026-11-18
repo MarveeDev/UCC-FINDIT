@@ -24,6 +24,7 @@ def _report(client, headers, location_id, report_type, item_name, category):
         json={
             "report_type": report_type, "item_name": item_name, "category": category,
             "description": "desc", "location_id": location_id,
+            "location_description": "Near the campus library",
             "event_date": date.today().isoformat(),
         },
         headers=headers,

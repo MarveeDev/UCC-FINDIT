@@ -58,7 +58,7 @@ export function VerifyEmailPage() {
       footer={
         <>
           Wrong email?{' '}
-          <Link className="font-semibold text-brand hover:underline" to="/register">
+          <Link className="font-semibold text-mint hover:text-white hover:underline" to="/register">
             Register again
           </Link>
         </>

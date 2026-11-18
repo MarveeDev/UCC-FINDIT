@@ -285,3 +285,30 @@ export async function createUser(payload: {
   const res = await api.post<ApiEnvelope<User>>('/users', payload)
   return res.data.data as User
 }
+
+export async function getUnassignedReports(
+  params: {
+    page?: number
+    per_page?: number
+    search?: string
+    report_type?: 'lost' | 'found'
+    status?: string
+    sort?: 'newest' | 'oldest'
+  } = {},
+): Promise<Paginated<ReportSummary>> {
+  const res = await api.get<ApiEnvelope<Paginated<ReportSummary>>>('/admin/unassigned-reports', {
+    params,
+  })
+  return res.data.data as Paginated<ReportSummary>
+}
+
+export async function assignReport(
+  reportId: number,
+  locationId: number,
+): Promise<ReportSummary> {
+  const res = await api.post<ApiEnvelope<ReportSummary>>(
+    `/admin/reports/${reportId}/assign`,
+    { location_id: locationId },
+  )
+  return res.data.data as ReportSummary
+}

@@ -18,6 +18,7 @@ def _report_payload(location_id, **overrides):
         "brand": "Dell",
         "colour": "Black",
         "location_id": location_id,
+        "location_description": "Near the campus library",
         "event_date": date.today().isoformat(),
     }
     payload.update(overrides)

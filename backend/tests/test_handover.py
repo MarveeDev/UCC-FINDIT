@@ -39,6 +39,7 @@ def _setup_approved(client):
             "category": "Electronics",
             "description": "Dell XPS",
             "location_id": loc["id"],
+            "location_description": "Near the campus library",
             "event_date": date.today().isoformat(),
         },
         headers=finder_headers,

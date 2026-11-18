@@ -100,8 +100,11 @@ def validate_report(data):
             if longitude is None or not (-180 <= longitude <= 180):
                 errors["longitude"] = "Longitude must be between -180 and 180"
 
-    if location_id is None:
-        errors["location_id"] = "Location is required"
+    location_description = (data.get("location_description") or "").strip()
+    if not location_description:
+        errors["location_description"] = "Location description is required"
+    elif len(location_description) > 200:
+        errors["location_description"] = "Location description is too long"
 
     cleaned = {
         "report_type": report_type,
@@ -114,6 +117,7 @@ def validate_report(data):
         "custody_info": custody,
         "image_path": image_path,
         "location_id": location_id,
+        "location_description": location_description,
         "latitude": latitude,
         "longitude": longitude,
         "event_date": event_date,

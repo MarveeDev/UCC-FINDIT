@@ -34,6 +34,7 @@ def create_app(config_name="default"):
 
 
 def _register_blueprints(app):
+    from app.admin.routes import admin_bp
     from app.analytics.routes import analytics_bp
     from app.audit.routes import audit_bp
     from app.auth.routes import auth_bp
@@ -68,6 +69,7 @@ def _register_blueprints(app):
     app.register_blueprint(audit_bp)
     app.register_blueprint(analytics_bp)
     app.register_blueprint(health_bp)
+    app.register_blueprint(admin_bp)
 
 
 def _register_models():

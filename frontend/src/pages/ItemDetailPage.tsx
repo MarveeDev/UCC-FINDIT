@@ -105,9 +105,14 @@ export function ItemDetailPage() {
             )}
             <div>
               <dt className="font-medium text-midnight/50">Location</dt>
-              <dd className="flex items-center gap-1 text-midnight">
-                <MapPin className="h-3.5 w-3.5" /> {report.location_name ?? 'Unknown'}
+              <dd className="text-midnight">
+                {report.location_description ?? 'Unknown'}
               </dd>
+              {report.location_name && (
+                <dd className="mt-0.5 flex items-center gap-1 text-sm text-midnight/60">
+                  <MapPin className="h-3.5 w-3.5" /> {report.location_name}
+                </dd>
+              )}
             </div>
             <div>
               <dt className="font-medium text-midnight/50">Date {isLost ? 'lost' : 'found'}</dt>

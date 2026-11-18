@@ -32,6 +32,7 @@ export function ReportPage({ mode }: ReportPageProps) {
   const [identifying, setIdentifying] = useState('')
   const [custody, setCustody] = useState('')
   const [locationId, setLocationId] = useState('')
+  const [locationDescription, setLocationDescription] = useState('')
   const [position, setPosition] = useState<MapPosition | null>(null)
   const [eventDate, setEventDate] = useState('')
   const [eventTime, setEventTime] = useState('')
@@ -50,8 +51,8 @@ export function ReportPage({ mode }: ReportPageProps) {
     e.preventDefault()
     setError(null)
     setFieldErrors({})
-    if (!locationId) {
-      setFieldErrors({ location_id: 'Please select a campus location' })
+    if (!locationDescription.trim()) {
+      setFieldErrors({ location_description: 'Please describe the location' })
       return
     }
     setSubmitting(true)
@@ -70,7 +71,8 @@ export function ReportPage({ mode }: ReportPageProps) {
         colour: colour || undefined,
         identifying_characteristics: identifying || undefined,
         custody_info: !isLost && custody ? custody : undefined,
-        location_id: Number(locationId),
+        location_id: locationId ? Number(locationId) : undefined,
+        location_description: locationDescription,
         latitude: position?.latitude,
         longitude: position?.longitude,
         event_date: eventDate,
@@ -85,8 +87,6 @@ export function ReportPage({ mode }: ReportPageProps) {
       setSubmitting(false)
     }
   }
-
-  const locationLabel = isLost ? 'Last known location' : 'Location found'
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -181,14 +181,22 @@ export function ReportPage({ mode }: ReportPageProps) {
           />
         )}
 
+        <Input
+          id="location_description"
+          label="Describe the location"
+          placeholder="e.g. Behind the Science Building"
+          value={locationDescription}
+          error={fieldErrors.location_description}
+          onChange={(e) => setLocationDescription(e.target.value)}
+          required
+        />
+
         <LocationCombobox
           id="location"
-          label={locationLabel}
+          label="Campus location (optional)"
           value={locationId}
           onChange={setLocationId}
           locations={locations}
-          error={fieldErrors.location_id}
-          required
         />
 
         <div className="flex flex-col gap-1">

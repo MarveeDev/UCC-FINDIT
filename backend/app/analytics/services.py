@@ -66,6 +66,11 @@ def get_dashboard(user, location_id=None, date_from=None, date_to=None):
         .scalar()
         or 0
     )
+    unassigned = 0
+    if user.role == UserRole.SUPER_ADMIN:
+        unassigned = ItemReport.query.filter(
+            ItemReport.location_id.is_(None)
+        ).count()
 
     recent_reports = (
         ItemReport.query.filter(ItemReport.location_id.in_(location_ids))
@@ -89,6 +94,7 @@ def get_dashboard(user, location_id=None, date_from=None, date_to=None):
             "awaiting_collection": awaiting,
             "pending_claims": pending_claims,
             "active_staff": active_staff,
+            "unassigned": unassigned,
         },
         "recent_reports": [serialize_report_public(r) for r in recent_reports],
         "pending_claim_summaries": [
@@ -109,6 +115,7 @@ def empty_dashboard():
         "metrics": {
             "lost": 0, "found": 0, "recovered": 0,
             "awaiting_collection": 0, "pending_claims": 0, "active_staff": 0,
+            "unassigned": 0,
         },
         "recent_reports": [],
         "pending_claim_summaries": [],

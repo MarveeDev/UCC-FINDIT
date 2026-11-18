@@ -49,8 +49,9 @@ export interface ReportSummary {
   description: string
   brand: string | null
   colour: string | null
-  location_id: number
+  location_id: number | null
   location_name: string | null
+  location_description: string | null
   latitude: number | null
   longitude: number | null
   location_latitude: number | null
@@ -107,7 +108,8 @@ export interface ReportPayload {
   brand?: string
   colour?: string
   identifying_characteristics?: string
-  location_id: number
+  location_id?: number
+  location_description: string
   latitude?: number
   longitude?: number
   event_date: string
@@ -161,6 +163,7 @@ export interface DashboardMetrics {
   awaiting_collection: number
   pending_claims: number
   active_staff: number
+  unassigned: number
 }
 
 export interface PendingClaimSummary {

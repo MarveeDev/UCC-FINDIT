@@ -4,15 +4,18 @@ import {
   Boxes,
   CheckCircle,
   ClipboardList,
+  Inbox,
   PackageCheck,
   PackageSearch,
   Users,
 } from 'lucide-react'
 import { StatCard } from '../components/StatCard'
+import { useAuth } from '../context/authContext'
 import { getDashboard } from '../lib/resources'
 import type { DashboardData } from '../types'
 
 export function ManagerDashboardPage() {
+  const { user } = useAuth()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -44,6 +47,11 @@ export function ManagerDashboardPage() {
         <StatCard label="Awaiting collection" value={m.awaiting_collection} icon={PackageCheck} />
         <StatCard label="Pending claims" value={m.pending_claims} icon={ClipboardList} />
         <StatCard label="Active staff" value={m.active_staff} icon={Users} />
+        {user?.role === 'SUPER_ADMIN' && (
+          <Link to="/admin/unassigned" className="transition hover:opacity-90">
+            <StatCard label="Unassigned reports" value={m.unassigned} icon={Inbox} />
+          </Link>
+        )}
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">

@@ -21,6 +21,7 @@ def _found_report(client, headers, location_id, reporter):
             "category": "Electronics",
             "description": "Dell XPS in a sleeve",
             "location_id": location_id,
+            "location_description": "Near the campus library",
             "event_date": date.today().isoformat(),
         },
         headers=headers,

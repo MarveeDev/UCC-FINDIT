@@ -7,10 +7,12 @@ from app.utils import ApiError
 def notify_location_managers(report):
     """Create a notification for each manager responsible for a report's location.
 
-    Returns the created notifications. Locations without an assigned manager
-    are handled explicitly (no notification is created) rather than silently
-    losing the event; the report still appears in the campus-wide feed.
+    Free-text-only reports (no registered location) are published without a
+    manager notification — the responsible manager is never guessed.
     """
+    if report.location_id is None:
+        return []
+
     manager_ids = responsible_manager_ids(report.location_id)
     if not manager_ids:
         return []
@@ -94,6 +96,30 @@ def notify_possible_matches(matches):
             )
     if matches:
         db.session.commit()
+
+
+def notify_report_assignment(report):
+    """Notify the managers of the location a report was just assigned to.
+
+    Returns the notified manager ids. Locations without a manager are handled
+    explicitly (no notification), never guessed.
+    """
+    if report.location_id is None:
+        return []
+    manager_ids = responsible_manager_ids(report.location_id)
+    if not manager_ids:
+        return []
+    location_name = report.location.name if report.location else "the campus"
+    for user_id in manager_ids:
+        _add_notification(
+            user_id,
+            NotificationType.REPORT_ASSIGNED,
+            "Report assigned to your location",
+            f"'{report.item_name}' was assigned to {location_name}.",
+            report.id,
+        )
+    db.session.commit()
+    return manager_ids
 
 
 def notify_claim_submitted(claim):

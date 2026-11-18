@@ -45,6 +45,7 @@ export function QrRecoveryPage() {
         category,
         description,
         location_id: Number(locationId),
+        location_description: description,
         event_date: eventDate,
       })
       navigate('/feed')

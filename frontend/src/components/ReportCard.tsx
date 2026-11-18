@@ -35,7 +35,8 @@ export function ReportCard({ report }: { report: ReportSummary }) {
       )}
       <div className="mt-3 flex items-center gap-4 text-xs text-midnight/50">
         <span className="flex items-center gap-1">
-          <MapPin className="h-3.5 w-3.5" /> {report.location_name ?? 'Unknown location'}
+          <MapPin className="h-3.5 w-3.5" />{' '}
+          {report.location_description ?? report.location_name ?? 'Unknown location'}
         </span>
         {report.event_date && (
           <span className="flex items-center gap-1">

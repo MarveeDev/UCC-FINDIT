@@ -83,6 +83,8 @@ def convert_inspection(inspection_id):
         "brand": (data.get("brand") or "").strip() or inspection.brand,
         "colour": (data.get("colour") or "").strip() or inspection.colour,
         "location_id": data.get("location_id") or inspection.location_id,
+        "location_description": (data.get("location_description") or "").strip()
+        or (inspection.location.name if inspection.location else "Campus inspection"),
         "event_date": (data.get("event_date") or "").strip() or date.today().isoformat(),
         "custody_info": inspection.notes,
     }

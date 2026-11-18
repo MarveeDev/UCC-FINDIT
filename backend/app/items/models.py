@@ -58,8 +58,9 @@ class ItemReport(db.Model):
     colour = db.Column(db.String(40), nullable=True)
     identifying_characteristics = db.Column(db.Text, nullable=True)
     location_id = db.Column(
-        db.Integer, db.ForeignKey("campus_locations.id"), nullable=False, index=True
+        db.Integer, db.ForeignKey("campus_locations.id"), nullable=True, index=True
     )
+    location_description = db.Column(db.Text, nullable=True)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     event_date = db.Column(db.Date, nullable=False)

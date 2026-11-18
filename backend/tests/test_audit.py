@@ -76,6 +76,7 @@ def test_audit_logged_for_claim_decision(client):
         "/api/v1/reports",
         json={"report_type": "FOUND", "item_name": "Keys", "category": "Keys",
               "description": "A ring of keys", "location_id": loc["id"],
+              "location_description": "Near the campus library",
               "event_date": date.today().isoformat()},
         headers=finder_headers,
     ).get_json()["data"]

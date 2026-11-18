@@ -20,11 +20,11 @@ def _setup(client):
     reports = []
     for payload in [
         {"report_type": "LOST", "item_name": "Black Laptop", "category": "Electronics",
-         "description": "Dell XPS", "location_id": lib["id"], "event_date": today},
+         "description": "Dell XPS", "location_id": lib["id"], "location_description": "Near the campus library", "event_date": today},
         {"report_type": "FOUND", "item_name": "Blue Umbrella", "category": "Other",
-         "description": "Large golf umbrella", "location_id": hostel["id"], "event_date": today},
+         "description": "Large golf umbrella", "location_id": hostel["id"], "location_description": "Near the campus library", "event_date": today},
         {"report_type": "FOUND", "item_name": "Water Bottle", "category": "Water Bottles",
-         "description": "Steel bottle with stickers", "location_id": lib["id"], "event_date": today},
+         "description": "Steel bottle with stickers", "location_id": lib["id"], "location_description": "Near the campus library", "event_date": today},
     ]:
         r = client.post("/api/v1/reports", json=payload, headers=headers)
         reports.append(r.get_json()["data"])

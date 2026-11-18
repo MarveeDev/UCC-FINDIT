@@ -92,8 +92,12 @@ def compute_match_score(lost, found):
         score += min(10, shared_desc * 2)
         reasons.append(f"{shared_desc} common description keyword(s)")
 
-    # Location.
-    if lost.location_id == found.location_id:
+    # Location (only when both reports share a registered campus location).
+    if (
+        lost.location_id is not None
+        and found.location_id is not None
+        and lost.location_id == found.location_id
+    ):
         score += 10
         reasons.append("Same location")
 

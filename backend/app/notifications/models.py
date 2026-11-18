@@ -4,6 +4,7 @@ from app.users.models import utcnow
 
 class NotificationType:
     NEW_REPORT = "NEW_REPORT"
+    REPORT_ASSIGNED = "REPORT_ASSIGNED"
     POSSIBLE_MATCH = "POSSIBLE_MATCH"
     CLAIM_SUBMITTED = "CLAIM_SUBMITTED"
     CLAIM_APPROVED = "CLAIM_APPROVED"

@@ -19,6 +19,7 @@ def _report(client, headers, location_id, **extra):
         "category": "Electronics",
         "description": "A phone",
         "location_id": location_id,
+        "location_description": "Near the campus library",
         "event_date": date.today().isoformat(),
         **extra,
     }
