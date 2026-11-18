@@ -4,8 +4,10 @@ from app import create_app
 
 
 def _clear_secrets(monkeypatch):
+    # Set to empty (insecure) rather than deleting, so the test stays hermetic
+    # even when a local `backend/.env` has populated the environment.
     for key in ("SECRET_KEY", "JWT_SECRET_KEY"):
-        monkeypatch.delenv(key, raising=False)
+        monkeypatch.setenv(key, "")
 
 
 def test_production_fails_with_missing_secrets(monkeypatch):
