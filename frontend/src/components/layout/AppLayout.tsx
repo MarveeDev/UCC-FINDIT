@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react'
 import {
+  BarChart3,
   Bell,
   Boxes,
   ClipboardList,
   FileCheck,
+  LayoutDashboard,
   LogOut,
+  PackageCheck,
   PackageSearch,
   PlusCircle,
   QrCode,
+  ScrollText,
   Sparkles,
+  Users,
   type LucideIcon,
 } from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
@@ -23,19 +28,23 @@ interface NavItem {
   roles?: Role[]
 }
 
+const MANAGER_OR_ADMIN: Role[] = ['LOCATION_MANAGER', 'SUPER_ADMIN']
+const STAFF_OR_ABOVE: Role[] = ['LOCATION_STAFF', 'LOCATION_MANAGER', 'SUPER_ADMIN']
+
 const navItems: NavItem[] = [
   { to: '/feed', label: 'Community Feed', icon: Boxes },
   { to: '/report-lost', label: 'Report Lost', icon: PackageSearch },
   { to: '/report-found', label: 'Report Found', icon: PlusCircle },
   { to: '/matches', label: 'Possible Matches', icon: Sparkles },
   { to: '/claims/mine', label: 'My Claims', icon: FileCheck, roles: ['STUDENT'] },
-  {
-    to: '/claims',
-    label: 'Claims',
-    icon: ClipboardList,
-    roles: ['LOCATION_MANAGER', 'LOCATION_STAFF', 'SUPER_ADMIN'],
-  },
+  { to: '/claims', label: 'Claims', icon: ClipboardList, roles: STAFF_OR_ABOVE },
   { to: '/qr', label: 'QR Codes', icon: QrCode },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: MANAGER_OR_ADMIN },
+  { to: '/staff', label: 'Staff', icon: Users, roles: MANAGER_OR_ADMIN },
+  { to: '/inspections', label: 'Inspections', icon: ClipboardList, roles: STAFF_OR_ABOVE },
+  { to: '/custody', label: 'Custody', icon: PackageCheck, roles: STAFF_OR_ABOVE },
+  { to: '/audit-logs', label: 'Audit Logs', icon: ScrollText, roles: MANAGER_OR_ADMIN },
+  { to: '/analytics', label: 'Analytics', icon: BarChart3, roles: MANAGER_OR_ADMIN },
   { to: '/notifications', label: 'Notifications', icon: Bell },
 ]
 

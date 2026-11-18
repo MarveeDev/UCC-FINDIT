@@ -34,14 +34,19 @@ def create_app(config_name="default"):
 
 
 def _register_blueprints(app):
+    from app.analytics.routes import analytics_bp
+    from app.audit.routes import audit_bp
     from app.auth.routes import auth_bp
     from app.claims.routes import claims_bp, handover_bp
+    from app.custody.routes import custody_bp
     from app.feed.routes import feed_bp
+    from app.inspections.routes import inspections_bp
     from app.items.routes import items_bp
     from app.locations.routes import locations_bp
     from app.matching.routes import matches_bp
     from app.notifications.routes import notifications_bp
     from app.qr.routes import qr_bp
+    from app.staff.routes import staff_bp
     from app.uploads.routes import uploads_bp
     from app.users.routes import users_bp
 
@@ -56,6 +61,11 @@ def _register_blueprints(app):
     app.register_blueprint(qr_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(uploads_bp)
+    app.register_blueprint(staff_bp)
+    app.register_blueprint(inspections_bp)
+    app.register_blueprint(custody_bp)
+    app.register_blueprint(audit_bp)
+    app.register_blueprint(analytics_bp)
 
 
 def _register_models():
@@ -69,6 +79,9 @@ def _register_models():
     from app.qr import models  # noqa: F401
     from app.notifications import models  # noqa: F401
     from app.security import models  # noqa: F401
+    from app.inspections import models  # noqa: F401
+    from app.custody import models  # noqa: F401
+    from app.audit import models  # noqa: F401
 
 
 def _register_jwt_handlers(app):

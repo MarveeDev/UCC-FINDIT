@@ -52,7 +52,8 @@ def serialize_report_detail(report, viewer):
     return data
 
 
-def create_report(reporter, data):
+def build_report(reporter, data):
+    """Construct and stage an ItemReport without committing (for atomic flows)."""
     location = db.session.get(CampusLocation, data["location_id"])
     if location is None or not location.is_active:
         raise ApiError("Selected location is not valid", status=400)
@@ -74,6 +75,11 @@ def create_report(reporter, data):
         status=ItemStatus.OPEN,
     )
     db.session.add(report)
+    return report
+
+
+def create_report(reporter, data):
+    report = build_report(reporter, data)
     db.session.commit()
     return report
 

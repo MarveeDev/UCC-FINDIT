@@ -1,7 +1,14 @@
 from flask import Blueprint, current_app, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
+from app.audit.services import (
+    CLAIM_DECIDED,
+    HANDOVER_COMPLETED,
+    record_audit,
+)
 from app.claims import services as claim_services
+from app.custody.models import CustodyEventType
+from app.custody.services import record_custody
 from app.locations.services import user_has_location_access
 from app.security.services import client_ip, enforce_rate_limit
 from app.users.models import UserRole
@@ -90,6 +97,14 @@ def review_claim(claim_id):
     claim, code = claim_services.review_claim(
         reviewer, claim_id, data.get("decision"), data.get("note")
     )
+    record_audit(
+        reviewer.id,
+        CLAIM_DECIDED,
+        "claim",
+        claim.id,
+        claim.report.location_id,
+        metadata={"decision": claim.status},
+    )
     result = claim_services.serialize_claim(claim, reviewer)
     if code:
         result["collection_code"] = code
@@ -109,6 +124,22 @@ def verify_handover():
     data = request.get_json(silent=True) or {}
     claim, report = claim_services.verify_handover_code(
         verifier, data.get("claim_id"), data.get("code")
+    )
+    record_custody(
+        verifier,
+        report.id,
+        CustodyEventType.RELEASED,
+        verifier.id,
+        report.location_id,
+        note="Item handed over to owner",
+    )
+    record_audit(
+        verifier.id,
+        HANDOVER_COMPLETED,
+        "report",
+        report.id,
+        report.location_id,
+        metadata={"claim_id": claim.id},
     )
     return ok(
         data={

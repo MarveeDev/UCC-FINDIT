@@ -1,9 +1,14 @@
 import api from './api'
 import type {
+  AnalyticsData,
   ApiEnvelope,
+  AuditLog,
   CampusLocation,
   Claim,
+  CustodyRecord,
+  DashboardData,
   FeedParams,
+  Inspection,
   Match,
   NotificationItem,
   Paginated,
@@ -11,6 +16,8 @@ import type {
   ReportDetail,
   ReportPayload,
   ReportSummary,
+  StaffMember,
+  User,
 } from '../types'
 
 export async function getLocations(): Promise<CampusLocation[]> {
@@ -145,4 +152,136 @@ export async function reportFoundByToken(
 ): Promise<ReportSummary> {
   const res = await api.post<ApiEnvelope<ReportSummary>>(`/qr/${token}/report-found`, payload)
   return res.data.data as ReportSummary
+}
+
+export async function getDashboard(
+  params: { location_id?: number; date_from?: string; date_to?: string } = {},
+): Promise<DashboardData> {
+  const res = await api.get<ApiEnvelope<DashboardData>>('/dashboard', { params })
+  return res.data.data as DashboardData
+}
+
+export async function getAnalytics(
+  params: {
+    location_id?: number
+    date_from?: string
+    date_to?: string
+    category?: string
+  } = {},
+): Promise<AnalyticsData> {
+  const res = await api.get<ApiEnvelope<AnalyticsData>>('/analytics', { params })
+  return res.data.data as AnalyticsData
+}
+
+export async function getStaff(): Promise<StaffMember[]> {
+  const res = await api.get<ApiEnvelope<StaffMember[]>>('/staff')
+  return res.data.data ?? []
+}
+
+export async function createStaff(payload: {
+  first_name: string
+  last_name: string
+  email: string
+  password: string
+  location_id: number
+}): Promise<User> {
+  const res = await api.post<ApiEnvelope<User>>('/staff', payload)
+  return res.data.data as User
+}
+
+export async function removeStaffAssignment(
+  userId: number,
+  locationId: number,
+): Promise<void> {
+  await api.delete(`/staff/${userId}/assignments/${locationId}`)
+}
+
+export async function getStaffActivity(userId: number): Promise<{
+  inspections: number
+  found_reports: number
+  custody_actions: number
+}> {
+  const res = await api.get<ApiEnvelope<Record<string, number>>>(`/staff/${userId}/activity`)
+  return res.data.data as unknown as {
+    inspections: number
+    found_reports: number
+    custody_actions: number
+  }
+}
+
+export async function getManagerLocations(): Promise<CampusLocation[]> {
+  const res = await api.get<ApiEnvelope<CampusLocation[]>>('/staff/locations/mine')
+  return res.data.data ?? []
+}
+
+export async function getInspections(params: {
+  location_id?: number
+  status?: string
+} = {}): Promise<Inspection[]> {
+  const res = await api.get<ApiEnvelope<Inspection[]>>('/inspections', { params })
+  return res.data.data ?? []
+}
+
+export async function createInspection(payload: {
+  location_id: number
+  item_description: string
+  category: string
+  colour?: string
+  brand?: string
+  notes?: string
+}): Promise<Inspection> {
+  const res = await api.post<ApiEnvelope<Inspection>>('/inspections', payload)
+  return res.data.data as Inspection
+}
+
+export async function convertInspection(
+  id: number,
+): Promise<{ inspection: Inspection; report: ReportSummary }> {
+  const res = await api.post<ApiEnvelope<{ inspection: Inspection; report: ReportSummary }>>(
+    `/inspections/${id}/convert`,
+  )
+  return res.data.data as { inspection: Inspection; report: ReportSummary }
+}
+
+export async function getCustody(reportId: number): Promise<CustodyRecord[]> {
+  const res = await api.get<ApiEnvelope<CustodyRecord[]>>(`/custody/${reportId}`)
+  return res.data.data ?? []
+}
+
+export async function recordCustody(payload: {
+  found_report_id: number
+  event_type: 'RECEIVED' | 'TRANSFERRED'
+  staff_id: number
+  location_id: number
+  note?: string
+}): Promise<CustodyRecord> {
+  const res = await api.post<ApiEnvelope<CustodyRecord>>('/custody', payload)
+  return res.data.data as CustodyRecord
+}
+
+export async function getAuditLogs(params: {
+  location_id?: number
+  action?: string
+  page?: number
+} = {}): Promise<Paginated<AuditLog>> {
+  const res = await api.get<ApiEnvelope<Paginated<AuditLog>>>('/audit-logs', { params })
+  return res.data.data as Paginated<AuditLog>
+}
+
+export async function getUsers(role?: string): Promise<Paginated<User>> {
+  const res = await api.get<ApiEnvelope<Paginated<User>>>('/users', {
+    params: role ? { role } : {},
+  })
+  return res.data.data as Paginated<User>
+}
+
+export async function createUser(payload: {
+  first_name: string
+  last_name: string
+  email: string
+  password: string
+  role: string
+}): Promise<User> {
+  const res = await api.post<ApiEnvelope<User>>('/users', payload)
+  return res.data.data as User
 }

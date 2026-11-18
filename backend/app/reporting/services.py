@@ -13,7 +13,12 @@ from app.notifications import services as notification_services
 
 def submit_report(reporter, cleaned):
     report = item_services.create_report(reporter, cleaned)
+    run_side_effects(report)
+    return report
+
+
+def run_side_effects(report):
+    """Run post-commit side effects for a newly created report."""
     notification_services.notify_location_managers(report)
     matches = matching_services.evaluate_report(report)
     notification_services.notify_possible_matches(matches)
-    return report
