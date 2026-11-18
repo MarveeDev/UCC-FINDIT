@@ -3,6 +3,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app.items import services as item_services
 from app.items import validators
+from app.reporting.services import submit_report
 from app.users.services import get_user_by_id
 from app.utils import fail, ok
 
@@ -18,16 +19,7 @@ def create_report():
         return fail("Validation failed", status=422, errors=errors)
 
     reporter = get_user_by_id(int(get_jwt_identity()))
-    report = item_services.create_report(reporter, cleaned)
-
-    # Notify the manager responsible for the selected location. This is done
-    # after the report is persisted so a notification failure never loses the
-    # report. The matching engine is then evaluated (currently a no-op stub).
-    from app.matching.services import evaluate_report
-    from app.notifications.services import notify_location_managers
-
-    notify_location_managers(report)
-    evaluate_report(report)
+    report = submit_report(reporter, cleaned)
 
     return ok(
         data=item_services.serialize_report_public(report),

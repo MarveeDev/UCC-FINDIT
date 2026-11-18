@@ -118,6 +118,10 @@ class Config:
     RESEND_RATE_LIMIT = int(os.getenv("RESEND_RATE_LIMIT", "5"))
     RESEND_RATE_WINDOW_SECONDS = int(os.getenv("RESEND_RATE_WINDOW_SECONDS", "300"))
 
+    # Secure handover codes
+    HANDOVER_CODE_EXPIRY_HOURS = int(os.getenv("HANDOVER_CODE_EXPIRY_HOURS", "24"))
+    HANDOVER_CODE_MAX_ATTEMPTS = int(os.getenv("HANDOVER_CODE_MAX_ATTEMPTS", "5"))
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
@@ -134,7 +138,7 @@ class TestingConfig(Config):
     ENFORCE_UCC_DOMAIN = False
     MAIL_DEBUG = True
     EXPOSE_OTP_IN_RESPONSE = True
-    LOGIN_RATE_LIMIT = 5
+    LOGIN_RATE_LIMIT = 100
 
 
 class ProductionConfig(Config):

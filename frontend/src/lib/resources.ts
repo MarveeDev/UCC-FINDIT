@@ -2,9 +2,12 @@ import api from './api'
 import type {
   ApiEnvelope,
   CampusLocation,
+  Claim,
   FeedParams,
+  Match,
   NotificationItem,
   Paginated,
+  QrRegistration,
   ReportDetail,
   ReportPayload,
   ReportSummary,
@@ -60,4 +63,86 @@ export async function uploadImage(
     form,
   )
   return res.data.data as { filename: string; url: string }
+}
+
+export async function getMatches(): Promise<Match[]> {
+  const res = await api.get<ApiEnvelope<Match[]>>('/matches')
+  return res.data.data ?? []
+}
+
+export async function createClaim(reportId: number, evidence: string): Promise<Claim> {
+  const res = await api.post<ApiEnvelope<Claim>>('/claims', {
+    report_id: reportId,
+    evidence,
+  })
+  return res.data.data as Claim
+}
+
+export async function getMyClaims(): Promise<Claim[]> {
+  const res = await api.get<ApiEnvelope<Claim[]>>('/claims/mine')
+  return res.data.data ?? []
+}
+
+export async function resubmitClaim(id: number, evidence: string): Promise<Claim> {
+  const res = await api.post<ApiEnvelope<Claim>>(`/claims/${id}/resubmit`, { evidence })
+  return res.data.data as Claim
+}
+
+export async function getClaims(status?: string): Promise<Claim[]> {
+  const res = await api.get<ApiEnvelope<Claim[]>>('/claims', {
+    params: status ? { status } : {},
+  })
+  return res.data.data ?? []
+}
+
+export async function getClaim(id: number): Promise<Claim> {
+  const res = await api.get<ApiEnvelope<Claim>>(`/claims/${id}`)
+  return res.data.data as Claim
+}
+
+export async function reviewClaim(
+  id: number,
+  decision: string,
+  note?: string,
+): Promise<Claim> {
+  const res = await api.post<ApiEnvelope<Claim>>(`/claims/${id}/review`, {
+    decision,
+    note,
+  })
+  return res.data.data as Claim
+}
+
+export async function verifyHandover(claimId: number, code: string): Promise<void> {
+  await api.post('/handover/verify', { claim_id: claimId, code })
+}
+
+export async function registerQr(itemName: string, description?: string): Promise<QrRegistration> {
+  const res = await api.post<ApiEnvelope<QrRegistration>>('/qr', {
+    item_name: itemName,
+    description,
+  })
+  return res.data.data as QrRegistration
+}
+
+export async function getMyQr(): Promise<QrRegistration[]> {
+  const res = await api.get<ApiEnvelope<QrRegistration[]>>('/qr/mine')
+  return res.data.data ?? []
+}
+
+export async function deactivateQr(id: number): Promise<QrRegistration> {
+  const res = await api.post<ApiEnvelope<QrRegistration>>(`/qr/${id}/deactivate`)
+  return res.data.data as QrRegistration
+}
+
+export async function getQrByToken(token: string): Promise<QrRegistration> {
+  const res = await api.get<ApiEnvelope<QrRegistration>>(`/qr/${token}`)
+  return res.data.data as QrRegistration
+}
+
+export async function reportFoundByToken(
+  token: string,
+  payload: ReportPayload,
+): Promise<ReportSummary> {
+  const res = await api.post<ApiEnvelope<ReportSummary>>(`/qr/${token}/report-found`, payload)
+  return res.data.data as ReportSummary
 }

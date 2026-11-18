@@ -35,10 +35,13 @@ def create_app(config_name="default"):
 
 def _register_blueprints(app):
     from app.auth.routes import auth_bp
+    from app.claims.routes import claims_bp, handover_bp
     from app.feed.routes import feed_bp
     from app.items.routes import items_bp
     from app.locations.routes import locations_bp
+    from app.matching.routes import matches_bp
     from app.notifications.routes import notifications_bp
+    from app.qr.routes import qr_bp
     from app.uploads.routes import uploads_bp
     from app.users.routes import users_bp
 
@@ -47,6 +50,10 @@ def _register_blueprints(app):
     app.register_blueprint(locations_bp)
     app.register_blueprint(items_bp)
     app.register_blueprint(feed_bp)
+    app.register_blueprint(matches_bp)
+    app.register_blueprint(claims_bp)
+    app.register_blueprint(handover_bp)
+    app.register_blueprint(qr_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(uploads_bp)
 
@@ -57,6 +64,9 @@ def _register_models():
     from app.users import models  # noqa: F401
     from app.locations import models  # noqa: F401
     from app.items import models  # noqa: F401
+    from app.matching import models  # noqa: F401
+    from app.claims import models  # noqa: F401
+    from app.qr import models  # noqa: F401
     from app.notifications import models  # noqa: F401
     from app.security import models  # noqa: F401
 

@@ -2,25 +2,40 @@ import { useEffect, useState } from 'react'
 import {
   Bell,
   Boxes,
+  ClipboardList,
+  FileCheck,
   LogOut,
   PackageSearch,
   PlusCircle,
+  QrCode,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/authContext'
 import { getUnreadCount } from '../../lib/resources'
+import type { Role } from '../../types'
 
 interface NavItem {
   to: string
   label: string
   icon: LucideIcon
+  roles?: Role[]
 }
 
 const navItems: NavItem[] = [
   { to: '/feed', label: 'Community Feed', icon: Boxes },
   { to: '/report-lost', label: 'Report Lost', icon: PackageSearch },
   { to: '/report-found', label: 'Report Found', icon: PlusCircle },
+  { to: '/matches', label: 'Possible Matches', icon: Sparkles },
+  { to: '/claims/mine', label: 'My Claims', icon: FileCheck, roles: ['STUDENT'] },
+  {
+    to: '/claims',
+    label: 'Claims',
+    icon: ClipboardList,
+    roles: ['LOCATION_MANAGER', 'LOCATION_STAFF', 'SUPER_ADMIN'],
+  },
+  { to: '/qr', label: 'QR Codes', icon: QrCode },
   { to: '/notifications', label: 'Notifications', icon: Bell },
 ]
 
@@ -40,6 +55,10 @@ export function AppLayout() {
     navigate('/login', { replace: true })
   }
 
+  const visibleItems = navItems.filter(
+    (item) => !item.roles || (user && item.roles.includes(user.role)),
+  )
+
   return (
     <div className="flex min-h-screen bg-mint-soft/60">
       <aside className="hidden w-64 flex-col bg-midnight text-white md:flex">
@@ -48,8 +67,8 @@ export function AppLayout() {
             UCC <span className="text-mint">FINDIT</span>
           </span>
         </div>
-        <nav className="flex-1 space-y-1 px-3">
-          {navItems.map((item) => (
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3">
+          {visibleItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

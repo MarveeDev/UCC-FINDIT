@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Calendar, MapPin } from 'lucide-react'
+import { Button } from '../components/ui/Button'
 import { getErrorMessage } from '../lib/api'
 import { getReport } from '../lib/resources'
 import type { ReportDetail } from '../types'
@@ -76,6 +77,18 @@ export function ItemDetailPage() {
           </p>
 
           <p className="mt-4 text-midnight/80">{report.description}</p>
+
+          {!isLost && !report.is_reporter && (
+            <div className="mt-6 rounded-xl border border-mint bg-mint-soft/50 p-4">
+              <p className="text-sm font-semibold text-midnight">Is this yours?</p>
+              <p className="mt-1 text-sm text-midnight/60">
+                Submit a private claim with proof of ownership.
+              </p>
+              <Link to={`/claims/new?report_id=${report.id}`}>
+                <Button className="mt-3">This Is Mine</Button>
+              </Link>
+            </div>
+          )}
 
           <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
             {report.brand && (

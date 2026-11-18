@@ -58,6 +58,7 @@ export interface ReportSummary {
 }
 
 export interface ReportDetail extends ReportSummary {
+  is_reporter?: boolean
   identifying_characteristics?: string | null
   custody_info?: string | null
 }
@@ -105,6 +106,44 @@ export interface ReportPayload {
   event_time?: string
   image_path?: string
   custody_info?: string
+}
+
+export type ClaimStatus =
+  | 'PENDING'
+  | 'MORE_INFORMATION_REQUIRED'
+  | 'APPROVED'
+  | 'REJECTED'
+
+export interface Match {
+  id: number
+  score: number
+  reasons: string[]
+  lost_report: ReportSummary
+  found_report: ReportSummary
+  created_at: string
+}
+
+export interface Claim {
+  id: number
+  report_id: number
+  status: ClaimStatus
+  claimant_name: string
+  review_note: string | null
+  created_at: string
+  reviewed_at: string | null
+  report: ReportSummary
+  evidence?: string
+  collection_code?: string
+}
+
+export interface QrRegistration {
+  id: number
+  item_name: string
+  description: string | null
+  is_active: boolean
+  created_at: string | null
+  token?: string
+  qr_url?: string
 }
 
 export interface ApiEnvelope<T> {

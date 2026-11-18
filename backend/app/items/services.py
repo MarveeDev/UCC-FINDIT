@@ -41,6 +41,7 @@ def serialize_report_detail(report, viewer):
     """Detail view: adds confidential fields only for the reporter or a manager
     of the report's location."""
     data = serialize_report_public(report)
+    data["is_reporter"] = viewer is not None and viewer.id == report.reporter_id
     can_view_private = viewer is not None and (
         viewer.id == report.reporter_id
         or user_manages_location(viewer, report.location_id)
