@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { PackageSearch, PlusCircle, Search } from 'lucide-react'
+import { LayoutList, Map as MapIcon, PackageSearch, PlusCircle, Search } from 'lucide-react'
+import { ReportMap } from '../components/map/ReportMap'
 import { ReportCard } from '../components/ReportCard'
 import { Button } from '../components/ui/Button'
 import { Select } from '../components/ui/Select'
@@ -27,6 +28,7 @@ export function FeedPage() {
   const [dateTo, setDateTo] = useState('')
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest')
   const [page, setPage] = useState(1)
+  const [view, setView] = useState<'list' | 'map'>('list')
 
   const [locations, setLocations] = useState<CampusLocation[]>([])
   const [result, setResult] = useState<Paginated<ReportSummary> | null>(null)
@@ -177,8 +179,32 @@ export function FeedPage() {
         />
       </form>
 
+      <div className="mb-4 flex items-center gap-2">
+        <span className="text-sm font-medium text-midnight/60">View:</span>
+        <button
+          type="button"
+          onClick={() => setView('list')}
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+            view === 'list' ? 'bg-brand text-white' : 'bg-white text-midnight/70 hover:bg-mint-soft'
+          }`}
+        >
+          <LayoutList className="h-4 w-4" /> List
+        </button>
+        <button
+          type="button"
+          onClick={() => setView('map')}
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+            view === 'map' ? 'bg-brand text-white' : 'bg-white text-midnight/70 hover:bg-mint-soft'
+          }`}
+        >
+          <MapIcon className="h-4 w-4" /> Map
+        </button>
+      </div>
+
       {loading ? (
         <div className="py-16 text-center text-midnight/50">Loading reports…</div>
+      ) : view === 'map' ? (
+        <ReportMap reports={result?.items ?? []} />
       ) : !result || result.items.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-midnight/15 bg-white py-16 text-center">
           <PackageSearch className="h-10 w-10 text-mint" />

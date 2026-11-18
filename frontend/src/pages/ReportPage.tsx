@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { MapPicker, type MapPosition } from '../components/map/MapPicker'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
@@ -26,6 +27,7 @@ export function ReportPage({ mode }: ReportPageProps) {
   const [identifying, setIdentifying] = useState('')
   const [custody, setCustody] = useState('')
   const [locationId, setLocationId] = useState('')
+  const [position, setPosition] = useState<MapPosition | null>(null)
   const [eventDate, setEventDate] = useState('')
   const [eventTime, setEventTime] = useState('')
   const [image, setImage] = useState<File | null>(null)
@@ -60,6 +62,8 @@ export function ReportPage({ mode }: ReportPageProps) {
         identifying_characteristics: identifying || undefined,
         custody_info: !isLost && custody ? custody : undefined,
         location_id: Number(locationId),
+        latitude: position?.latitude,
+        longitude: position?.longitude,
         event_date: eventDate,
         event_time: eventTime || undefined,
         image_path: imagePath,
@@ -183,6 +187,25 @@ export function ReportPage({ mode }: ReportPageProps) {
             </option>
           ))}
         </Select>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-midnight">
+            Pin the exact spot (optional)
+          </label>
+          <MapPicker value={position} onChange={setPosition} />
+          {position && (
+            <p className="text-xs text-midnight/50">
+              Pin: {position.latitude.toFixed(5)}, {position.longitude.toFixed(5)}{' '}
+              <button
+                type="button"
+                onClick={() => setPosition(null)}
+                className="font-medium text-brand hover:underline"
+              >
+                Clear
+              </button>
+            </p>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <Input

@@ -17,6 +17,13 @@ def _parse_time(value):
         return None
 
 
+def _parse_coord(value):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
 def validate_report(data):
     """Validate raw report input, returning (errors, cleaned).
 
@@ -77,6 +84,22 @@ def validate_report(data):
         if event_time is None:
             errors["event_time"] = "Event time must be a valid time (HH:MM)"
 
+    # Optional map coordinates (both or neither, within valid ranges).
+    latitude_raw = data.get("latitude")
+    longitude_raw = data.get("longitude")
+    latitude = None
+    longitude = None
+    if latitude_raw is not None or longitude_raw is not None:
+        if latitude_raw is None or longitude_raw is None:
+            errors["latitude"] = "Latitude and longitude must be provided together"
+        else:
+            latitude = _parse_coord(latitude_raw)
+            longitude = _parse_coord(longitude_raw)
+            if latitude is None or not (-90 <= latitude <= 90):
+                errors["latitude"] = "Latitude must be between -90 and 90"
+            if longitude is None or not (-180 <= longitude <= 180):
+                errors["longitude"] = "Longitude must be between -180 and 180"
+
     if location_id is None:
         errors["location_id"] = "Location is required"
 
@@ -91,6 +114,8 @@ def validate_report(data):
         "custody_info": custody,
         "image_path": image_path,
         "location_id": location_id,
+        "latitude": latitude,
+        "longitude": longitude,
         "event_date": event_date,
         "event_time": event_time,
     }

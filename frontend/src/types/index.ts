@@ -35,6 +35,8 @@ export interface CampusLocation {
   id: number
   name: string
   description: string | null
+  latitude: number | null
+  longitude: number | null
   is_active: boolean
   created_at: string | null
 }
@@ -49,6 +51,10 @@ export interface ReportSummary {
   colour: string | null
   location_id: number
   location_name: string | null
+  latitude: number | null
+  longitude: number | null
+  location_latitude: number | null
+  location_longitude: number | null
   event_date: string | null
   event_time: string | null
   status: ItemStatus
@@ -102,6 +108,8 @@ export interface ReportPayload {
   colour?: string
   identifying_characteristics?: string
   location_id: number
+  latitude?: number
+  longitude?: number
   event_date: string
   event_time?: string
   image_path?: string

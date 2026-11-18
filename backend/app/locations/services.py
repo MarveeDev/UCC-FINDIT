@@ -9,6 +9,8 @@ def serialize_location(location, include_assignments=False):
         "id": location.id,
         "name": location.name,
         "description": location.description,
+        "latitude": location.latitude,
+        "longitude": location.longitude,
         "is_active": location.is_active,
         "created_at": location.created_at.isoformat() if location.created_at else None,
     }
@@ -16,6 +18,24 @@ def serialize_location(location, include_assignments=False):
         data["manager_ids"] = [m.user_id for m in location.managers.all()]
         data["staff_ids"] = [s.user_id for s in location.staff_assignments.all()]
     return data
+
+
+def _parse_coords(latitude, longitude):
+    """Return (lat, lng) floats, or (None, None) when both are absent."""
+    if latitude is None and longitude is None:
+        return None, None
+    if latitude is None or longitude is None:
+        raise ApiError("Latitude and longitude must be provided together", status=422)
+    try:
+        lat = float(latitude)
+        lng = float(longitude)
+    except (TypeError, ValueError):
+        raise ApiError("Invalid coordinates", status=422)
+    if not (-90 <= lat <= 90):
+        raise ApiError("Latitude must be between -90 and 90", status=422)
+    if not (-180 <= lng <= 180):
+        raise ApiError("Longitude must be between -180 and 180", status=422)
+    return lat, lng
 
 
 def list_active_locations():
@@ -33,16 +53,19 @@ def get_location(location_id):
     return location
 
 
-def create_location(name, description=None):
+def create_location(name, description=None, latitude=None, longitude=None):
     if CampusLocation.query.filter_by(name=name).first():
         raise ApiError("A location with this name already exists", status=409)
-    location = CampusLocation(name=name, description=description)
+    lat, lng = _parse_coords(latitude, longitude)
+    location = CampusLocation(name=name, description=description, latitude=lat, longitude=lng)
     db.session.add(location)
     db.session.commit()
     return location
 
 
-def update_location(location_id, name=None, description=None, is_active=None):
+def update_location(
+    location_id, name=None, description=None, is_active=None, latitude=None, longitude=None
+):
     location = get_location(location_id)
     if name is not None and name != location.name:
         if CampusLocation.query.filter_by(name=name).first():
@@ -52,6 +75,10 @@ def update_location(location_id, name=None, description=None, is_active=None):
         location.description = description
     if is_active is not None:
         location.is_active = bool(is_active)
+    if latitude is not None or longitude is not None:
+        lat, lng = _parse_coords(latitude, longitude)
+        location.latitude = lat
+        location.longitude = lng
     db.session.commit()
     return location
 

@@ -60,6 +60,8 @@ class ItemReport(db.Model):
     location_id = db.Column(
         db.Integer, db.ForeignKey("campus_locations.id"), nullable=False, index=True
     )
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
     event_date = db.Column(db.Date, nullable=False)
     event_time = db.Column(db.Time, nullable=True)
     image_path = db.Column(db.String(255), nullable=True)

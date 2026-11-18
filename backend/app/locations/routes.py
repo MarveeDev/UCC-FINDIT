@@ -23,9 +23,11 @@ def create_location():
     data = request.get_json(silent=True) or {}
     name = (data.get("name") or "").strip()
     description = (data.get("description") or "").strip() or None
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
     if not name:
         return fail("Location name is required", status=422)
-    location = location_services.create_location(name, description)
+    location = location_services.create_location(name, description, latitude, longitude)
     return ok(data=location_services.serialize_location(location), status=201)
 
 
@@ -43,7 +45,11 @@ def update_location(location_id):
     name = (data.get("name") or "").strip() or None
     description = data.get("description")
     is_active = data.get("is_active")
-    location = location_services.update_location(location_id, name, description, is_active)
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
+    location = location_services.update_location(
+        location_id, name, description, is_active, latitude, longitude
+    )
     return ok(data=location_services.serialize_location(location))
 
 
