@@ -43,7 +43,6 @@ def create_user(first_name, last_name, email, password, role):
         email=email,
         password_hash=generate_password_hash(password),
         role=role,
-        email_verified=True,
     )
     db.session.add(user)
     db.session.commit()
@@ -66,6 +65,5 @@ def serialize_user(user):
         "last_name": user.last_name,
         "email": user.email,
         "role": user.role,
-        "email_verified": user.email_verified,
         "created_at": user.created_at.isoformat() if user.created_at else None,
     }

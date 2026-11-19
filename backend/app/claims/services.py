@@ -76,8 +76,6 @@ def submit_claim(claimant, report_id, evidence):
         raise ApiError("You can only claim found items", status=400)
     if report.reporter_id == claimant.id:
         raise ApiError("You cannot claim an item you reported yourself", status=400)
-    if not claimant.email_verified:
-        raise ApiError("You must verify your email before submitting a claim", status=403)
 
     evidence = (evidence or "").strip()
     if not evidence:

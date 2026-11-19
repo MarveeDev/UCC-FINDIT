@@ -81,22 +81,12 @@ class Config:
 
     CORS_ORIGINS = _list(os.getenv("CORS_ORIGINS"), ["http://localhost:5174"])
 
-    # OTP verification settings
-    OTP_EXPIRY_MINUTES = int(os.getenv("OTP_EXPIRY_MINUTES", "5"))
-    OTP_RESEND_COOLDOWN_SECONDS = int(os.getenv("OTP_RESEND_COOLDOWN_SECONDS", "60"))
-    OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
-
     # UCC email domain. Enforcement is OFF by default until the official
     # university email domain and delivery configuration are verified.
     ENFORCE_UCC_DOMAIN = _bool(os.getenv("ENFORCE_UCC_DOMAIN"))
     UCC_EMAIL_DOMAINS = _list(
         os.getenv("UCC_EMAIL_DOMAINS"), ["stu.ucc.edu.gh", "ucc.edu.gh"]
     )
-
-    # Email delivery (Resend)
-    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
-    MAIL_FROM = os.getenv("MAIL_FROM", "")
-    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5174")
 
     # Image uploads
     UPLOAD_FOLDER = os.getenv(
@@ -122,9 +112,6 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    # Development convenience: return the OTP in the API response so the
-    # registration flow can be exercised without email delivery.
-    EXPOSE_OTP_IN_RESPONSE = True
 
 
 class TestingConfig(Config):
@@ -133,13 +120,11 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     JWT_SECRET_KEY = "test-jwt-secret-which-is-at-least-32-bytes-long"
     ENFORCE_UCC_DOMAIN = False
-    EXPOSE_OTP_IN_RESPONSE = True
     LOGIN_RATE_LIMIT = 100
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    EXPOSE_OTP_IN_RESPONSE = False
     REQUIRE_STRONG_SECRETS = True
 
 

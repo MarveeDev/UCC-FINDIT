@@ -11,9 +11,7 @@ export interface RegisterPayload {
 export interface AuthContextValue {
   user: User | null
   loading: boolean
-  register: (payload: RegisterPayload) => Promise<string | undefined>
-  verifyEmail: (email: string, otp: string) => Promise<void>
-  resendOtp: (email: string) => Promise<string | undefined>
+  register: (payload: RegisterPayload) => Promise<void>
   login: (email: string, password: string) => Promise<void>
   logout: () => void
 }

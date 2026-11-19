@@ -23,13 +23,13 @@ export function RegisterPage() {
     setFieldErrors({})
     setSubmitting(true)
     try {
-      const devOtp = await register({
+      await register({
         first_name: firstName,
         last_name: lastName,
         email,
         password,
       })
-      navigate('/verify-email', { state: { email, devOtp } })
+      navigate('/login', { state: { success: 'Account created. You can now sign in.' } })
     } catch (err) {
       setFieldErrors(getFieldErrors(err))
       setError(getErrorMessage(err))

@@ -30,26 +30,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  async function register(payload: RegisterPayload): Promise<string | undefined> {
-    const res = await api.post<ApiEnvelope<User>>('/auth/register', payload)
-    return res.data.dev_otp
-  }
-
-  async function verifyEmail(email: string, otp: string): Promise<void> {
-    const res = await api.post<ApiEnvelope<AuthResult>>('/auth/verify-email', {
-      email,
-      otp,
-    })
-    const result = res.data.data
-    if (result) {
-      setSession(result.access_token, result.user)
-      setUser(result.user)
-    }
-  }
-
-  async function resendOtp(email: string): Promise<string | undefined> {
-    const res = await api.post<ApiEnvelope<unknown>>('/auth/resend-otp', { email })
-    return res.data.dev_otp
+  async function register(payload: RegisterPayload): Promise<void> {
+    await api.post<ApiEnvelope<User>>('/auth/register', payload)
   }
 
   async function login(email: string, password: string): Promise<void> {
@@ -70,9 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading, register, verifyEmail, resendOtp, login, logout }}
-    >
+    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

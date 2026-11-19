@@ -24,10 +24,29 @@ api.interceptors.response.use(
 )
 
 export function getErrorMessage(error: unknown, fallback = 'Something went wrong'): string {
-  if (axios.isAxiosError(error)) {
-    const data = error.response?.data as { message?: string } | undefined
-    return data?.message ?? fallback
+  if (!axios.isAxiosError(error)) {
+    return fallback
   }
+
+  // The request never reached the server (network/DNS/CORS) — no response.
+  if (!error.response) {
+    return 'Could not reach the server. Please check your connection and try again.'
+  }
+
+  const data = error.response.data as { message?: unknown } | null | undefined
+  if (
+    data &&
+    typeof data === 'object' &&
+    typeof data.message === 'string' &&
+    data.message.trim()
+  ) {
+    return data.message
+  }
+
+  if (error.response.status >= 500) {
+    return 'The server is temporarily unavailable. Please try again later.'
+  }
+
   return fallback
 }
 

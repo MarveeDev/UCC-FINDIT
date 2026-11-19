@@ -20,9 +20,6 @@ Target platforms: **Vercel** (frontend), **Render** (backend), **managed Postgre
 | `CORS_ORIGINS` | `http://localhost:5174` | — | **frontend origin** (never `*`) |
 | `ENFORCE_UCC_DOMAIN` | `false` | `false` | `true` (after domain verified) |
 | `UCC_EMAIL_DOMAINS` | `stu.ucc.edu.gh,ucc.edu.gh` | — | official domains |
-| `RESEND_API_KEY` | — (dev logs OTP) | — | **required** (Resend API key, starts `re_`) |
-| `MAIL_FROM` | — | — | **required** (verified Resend sender) |
-| `FRONTEND_URL` | `http://localhost:5174` | — | frontend origin (verification links) |
 | `UPLOAD_FOLDER` | local dir | temp | **object storage or mounted disk** |
 | `PORT` | 5000 | — | Render-provided |
 
@@ -54,7 +51,7 @@ Vercel build command: `npm run build`, output directory `dist`.
 - `FLASK_CONFIG=production` refuses to start with missing/weak `SECRET_KEY`/`JWT_SECRET_KEY`.
 - `CORS_ORIGINS` must be the exact frontend origin(s); never `*` in production.
 - Do **not** enable `X-Forwarded-For` trust unless behind a trusted reverse proxy (it is ignored by default).
-- Verification emails are sent via the **Resend** HTTP API. In development/testing (`EXPOSE_OTP_IN_RESPONSE`), the code is logged to the console and returned as `dev_otp`; production sends it by email and never logs or returns the plaintext. `RESEND_API_KEY` and `MAIL_FROM` are required in production, otherwise registration returns `503`.
+- Registration creates the account directly; there is no email verification step. Password hashing, JWT authentication, rate limiting, and UCC email-domain validation remain enforced.
 - File uploads use local disk by default; use object storage / persistent disk on Render (the filesystem is ephemeral).
 
 ## Backup & recovery

@@ -21,12 +21,10 @@ import { RegisterPage } from '../pages/RegisterPage'
 import { ReportPage } from '../pages/ReportPage'
 import { StaffManagementPage } from '../pages/StaffManagementPage'
 import { UnassignedReportsPage } from '../pages/UnassignedReportsPage'
-import { VerifyEmailPage } from '../pages/VerifyEmailPage'
 
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
-  { path: '/verify-email', element: <VerifyEmailPage /> },
   {
     element: <ProtectedRoute />,
     children: [

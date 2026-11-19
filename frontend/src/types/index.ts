@@ -22,7 +22,6 @@ export interface User {
   last_name: string
   email: string
   role: Role
-  email_verified: boolean
   created_at: string | null
 }
 
@@ -259,6 +258,5 @@ export interface ApiEnvelope<T> {
   data?: T
   message?: string
   errors?: Record<string, string>
-  dev_otp?: string
   retry_after?: number
 }

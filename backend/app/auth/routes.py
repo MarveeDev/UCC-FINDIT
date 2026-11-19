@@ -23,47 +23,7 @@ def register():
         return fail("Validation failed", status=422, errors=errors)
 
     result = auth_services.register_user(first_name, last_name, email, password)
-    return ok(
-        data=result["user"],
-        message=result["message"],
-        status=201,
-        **result.get("extra", {}),
-    )
-
-
-@auth_bp.post("/verify-email")
-def verify_email():
-    enforce_rate_limit(
-        "verify_email",
-        client_ip(),
-        current_app.config["VERIFY_RATE_LIMIT"],
-        current_app.config["VERIFY_RATE_WINDOW_SECONDS"],
-    )
-    data = request.get_json(silent=True) or {}
-    email = (data.get("email") or "").strip().lower()
-    otp = (data.get("otp") or "").strip()
-    if not email or not otp:
-        return fail("Email and verification code are required", status=422)
-
-    result = auth_services.verify_email(email, otp)
-    return ok(data=result, message=result["message"])
-
-
-@auth_bp.post("/resend-otp")
-def resend_otp():
-    enforce_rate_limit(
-        "resend_otp",
-        client_ip(),
-        current_app.config["RESEND_RATE_LIMIT"],
-        current_app.config["RESEND_RATE_WINDOW_SECONDS"],
-    )
-    data = request.get_json(silent=True) or {}
-    email = (data.get("email") or "").strip().lower()
-    if not email:
-        return fail("Email is required", status=422)
-
-    result = auth_services.resend_otp(email)
-    return ok(message=result["message"], **result.get("extra", {}))
+    return ok(data=result["user"], message=result["message"], status=201)
 
 
 @auth_bp.post("/login")
