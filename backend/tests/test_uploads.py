@@ -1,5 +1,6 @@
 import io
 
+import pytest
 from PIL import Image
 
 from tests.helpers import auth_header, create_user
@@ -106,6 +107,63 @@ def test_upload_image(client, monkeypatch):
 
 
 def test_upload_returns_502_when_cloudinary_unconfigured(client):
+    headers = _student_headers(client)
+    resp = client.post(
+        "/api/v1/uploads",
+        data={"file": (io.BytesIO(_png_bytes()), "photo.png")},
+        headers=headers,
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 502
+
+
+@pytest.mark.parametrize(
+    "missing_key",
+    ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"],
+)
+def test_upload_returns_502_when_a_credential_is_missing(client, missing_key):
+    for key in ("CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"):
+        client.application.config[key] = "test-value"
+    client.application.config[missing_key] = ""
+
+    headers = _student_headers(client)
+    resp = client.post(
+        "/api/v1/uploads",
+        data={"file": (io.BytesIO(_png_bytes()), "photo.png")},
+        headers=headers,
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 502
+
+
+def test_upload_returns_502_on_cloudinary_auth_failure(client, monkeypatch):
+    _configure_cloudinary(client, monkeypatch)
+
+    def _raise_auth(*a, **kw):
+        from cloudinary.exceptions import AuthorizationRequired
+
+        raise AuthorizationRequired("unauthorized")
+
+    monkeypatch.setattr("cloudinary.uploader.upload", _raise_auth)
+
+    headers = _student_headers(client)
+    resp = client.post(
+        "/api/v1/uploads",
+        data={"file": (io.BytesIO(_png_bytes()), "photo.png")},
+        headers=headers,
+        content_type="multipart/form-data",
+    )
+    assert resp.status_code == 502
+
+
+def test_upload_returns_502_on_cloudinary_network_failure(client, monkeypatch):
+    _configure_cloudinary(client, monkeypatch)
+
+    def _raise_network(*a, **kw):
+        raise OSError("connection refused")
+
+    monkeypatch.setattr("cloudinary.uploader.upload", _raise_network)
+
     headers = _student_headers(client)
     resp = client.post(
         "/api/v1/uploads",

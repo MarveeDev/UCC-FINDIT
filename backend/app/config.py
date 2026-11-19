@@ -18,6 +18,18 @@ def _list(value, default=None):
     return [item.strip() for item in str(value).split(",") if item.strip()]
 
 
+def _secret(value):
+    """Strip whitespace and accidental surrounding quotes from a secret value.
+
+    Copy-pasting credentials from a dashboard can leave trailing spaces or
+    enclosing quotes, which breaks API authentication.
+    """
+    value = (value or "").strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        value = value[1:-1].strip()
+    return value
+
+
 # Markers that identify placeholder / development secrets that must never be
 # used in production.
 _INSECURE_SECRET_MARKERS = (
@@ -104,9 +116,9 @@ class Config:
     # 6 MB request cap leaves headroom for multipart overhead; the upload route
     # enforces the stricter 5 MB per-image limit itself.
     MAX_CONTENT_LENGTH = 6 * 1024 * 1024
-    CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "")
-    CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "")
-    CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "")
+    CLOUDINARY_CLOUD_NAME = _secret(os.getenv("CLOUDINARY_CLOUD_NAME"))
+    CLOUDINARY_API_KEY = _secret(os.getenv("CLOUDINARY_API_KEY"))
+    CLOUDINARY_API_SECRET = _secret(os.getenv("CLOUDINARY_API_SECRET"))
     CLOUDINARY_FOLDER = os.getenv("CLOUDINARY_FOLDER", "ucc-findit/items")
 
     # DB-backed rate limiting

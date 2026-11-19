@@ -30,6 +30,7 @@ def create_app(config_name="default"):
     _register_blueprints(app)
     _register_models()
     _register_error_handlers(app)
+    _register_cli_commands(app)
 
     # Render's reverse proxy connects via loopback and forwards the real client
     # IP in X-Forwarded-For. Trust exactly one proxy so request.remote_addr
@@ -38,6 +39,28 @@ def create_app(config_name="default"):
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     return app
+
+
+def _register_cli_commands(app):
+    @app.cli.command("check-cloudinary")
+    def check_cloudinary_command():
+        """Verify Cloudinary credentials (sanitized, no upload, no secrets)."""
+        import json
+
+        from app.uploads.cloudinary_service import diagnostics, verify_credentials
+
+        diag = diagnostics()
+        ok, detail = verify_credentials()
+        print(
+            json.dumps(
+                {
+                    "configured": diag["configured"],
+                    "diagnostics": diag,
+                    "verification": {"ok": ok, "detail": detail},
+                },
+                indent=2,
+            )
+        )
 
 
 def _register_blueprints(app):
