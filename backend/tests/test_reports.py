@@ -130,6 +130,14 @@ def test_report_rejects_arbitrary_image_url(client):
     assert "image_url" in resp.get_json()["errors"]
 
 
+def test_item_report_model_has_cloudinary_columns():
+    from app.items.models import ItemReport
+
+    columns = {c.name for c in ItemReport.__table__.columns}
+    assert "image_url" in columns
+    assert "image_public_id" in columns
+
+
 def test_report_detail_requires_auth(client):
     _, admin_headers, loc = _admin_and_location(client)
     student = create_user("student@stu.ucc.edu.gh", "STUDENT")
