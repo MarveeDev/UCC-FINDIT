@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { LayoutList, Map as MapIcon, PackageSearch, PlusCircle, Search } from 'lucide-react'
 import { ReportCard } from '../components/ReportCard'
 import { Button } from '../components/ui/Button'
+import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
 import { ITEM_CATEGORIES } from '../constants'
 import { getFeed, getLocations } from '../lib/resources'
@@ -168,17 +169,19 @@ export function FeedPage() {
           <option value="oldest">Oldest first</option>
         </Select>
 
-        <input
+        <Input
+          id="date_from"
           type="date"
+          label="From date"
           value={dateFrom}
           onChange={(e) => resetAndSet(setDateFrom, e.target.value)}
-          className="rounded-lg border border-midnight/15 bg-white px-3 py-2.5 text-sm text-midnight focus:outline-none focus:ring-2 focus:ring-brand"
         />
-        <input
+        <Input
+          id="date_to"
           type="date"
+          label="To date"
           value={dateTo}
           onChange={(e) => resetAndSet(setDateTo, e.target.value)}
-          className="rounded-lg border border-midnight/15 bg-white px-3 py-2.5 text-sm text-midnight focus:outline-none focus:ring-2 focus:ring-brand"
         />
       </form>
 
