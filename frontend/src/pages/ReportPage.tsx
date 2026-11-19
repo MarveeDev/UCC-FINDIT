@@ -57,10 +57,12 @@ export function ReportPage({ mode }: ReportPageProps) {
     }
     setSubmitting(true)
     try {
-      let imagePath: string | undefined
+      let imageUrl: string | undefined
+      let imagePublicId: string | undefined
       if (image) {
         const uploaded = await uploadImage(image)
-        imagePath = uploaded.filename
+        imageUrl = uploaded.url
+        imagePublicId = uploaded.public_id
       }
       const report = await createReport({
         report_type: mode,
@@ -77,7 +79,8 @@ export function ReportPage({ mode }: ReportPageProps) {
         longitude: position?.longitude,
         event_date: eventDate,
         event_time: eventTime || undefined,
-        image_path: imagePath,
+        image_url: imageUrl,
+        image_public_id: imagePublicId,
       })
       navigate(`/items/${report.id}`)
     } catch (err) {

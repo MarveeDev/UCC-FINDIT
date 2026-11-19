@@ -93,6 +93,43 @@ def test_report_rejects_invalid_location(client):
     assert resp.status_code == 400
 
 
+def test_report_accepts_cloudinary_image(client):
+    _, admin_headers, loc = _admin_and_location(client)
+    student = create_user("student@stu.ucc.edu.gh", "STUDENT")
+    headers = auth_header(client, student.email)
+
+    resp = client.post(
+        "/api/v1/reports",
+        json=_report_payload(
+            loc["id"],
+            image_url="https://res.cloudinary.com/test-cloud/image/upload/v1/ucc-findit/items/abc123.png",
+            image_public_id="ucc-findit/items/abc123",
+        ),
+        headers=headers,
+    )
+    assert resp.status_code == 201
+    data = resp.get_json()["data"]
+    assert data["image_url"].startswith("https://res.cloudinary.com/")
+
+
+def test_report_rejects_arbitrary_image_url(client):
+    _, admin_headers, loc = _admin_and_location(client)
+    student = create_user("student@stu.ucc.edu.gh", "STUDENT")
+    headers = auth_header(client, student.email)
+
+    resp = client.post(
+        "/api/v1/reports",
+        json=_report_payload(
+            loc["id"],
+            image_url="https://evil.example.com/malware.jpg",
+            image_public_id="ucc-findit/items/abc123",
+        ),
+        headers=headers,
+    )
+    assert resp.status_code == 422
+    assert "image_url" in resp.get_json()["errors"]
+
+
 def test_report_detail_requires_auth(client):
     _, admin_headers, loc = _admin_and_location(client)
     student = create_user("student@stu.ucc.edu.gh", "STUDENT")

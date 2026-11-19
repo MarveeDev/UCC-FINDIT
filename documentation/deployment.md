@@ -20,7 +20,10 @@ Target platforms: **Vercel** (frontend), **Render** (backend), **managed Postgre
 | `CORS_ORIGINS` | `http://localhost:5174` | — | **frontend origin** (never `*`) |
 | `ENFORCE_UCC_DOMAIN` | `false` | `false` | `true` (after domain verified) |
 | `UCC_EMAIL_DOMAINS` | `stu.ucc.edu.gh,ucc.edu.gh` | — | official domains |
-| `UPLOAD_FOLDER` | local dir | temp | **object storage or mounted disk** |
+| `CLOUDINARY_CLOUD_NAME` | — | — | **required** (Cloudinary cloud name) |
+| `CLOUDINARY_API_KEY` | — | — | **required** (Cloudinary API key) |
+| `CLOUDINARY_API_SECRET` | — | — | **required** (Cloudinary API secret) |
+| `CLOUDINARY_FOLDER` | `ucc-findit/items` | — | Cloudinary folder prefix |
 | `PORT` | 5000 | — | Render-provided |
 
 Never commit real `.env` values. Secrets are provided via the hosting platform's secret store.

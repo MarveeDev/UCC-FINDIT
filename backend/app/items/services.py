@@ -36,7 +36,7 @@ def serialize_report_public(report):
         "event_date": report.event_date.isoformat() if report.event_date else None,
         "event_time": report.event_time.isoformat() if report.event_time else None,
         "status": report.status,
-        "image_url": f"/api/v1/uploads/{report.image_path}" if report.image_path else None,
+        "image_url": report.image_url,
         "reporter_name": _display_name(report.reporter),
         "created_at": report.created_at.isoformat() if report.created_at else None,
     }
@@ -81,6 +81,8 @@ def build_report(reporter, data):
         event_date=data["event_date"],
         event_time=data.get("event_time"),
         image_path=data.get("image_path"),
+        image_url=data.get("image_url"),
+        image_public_id=data.get("image_public_id"),
         custody_info=data.get("custody_info"),
         status=ItemStatus.OPEN,
     )

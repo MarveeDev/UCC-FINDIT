@@ -96,12 +96,18 @@ class Config:
         os.getenv("UCC_EMAIL_DOMAINS"), ["stu.ucc.edu.gh", "ucc.edu.gh"]
     )
 
-    # Image uploads
+    # Image uploads (Cloudinary object storage)
     UPLOAD_FOLDER = os.getenv(
         "UPLOAD_FOLDER",
         os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "uploads")),
     )
-    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
+    # 6 MB request cap leaves headroom for multipart overhead; the upload route
+    # enforces the stricter 5 MB per-image limit itself.
+    MAX_CONTENT_LENGTH = 6 * 1024 * 1024
+    CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+    CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", "")
+    CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", "")
+    CLOUDINARY_FOLDER = os.getenv("CLOUDINARY_FOLDER", "ucc-findit/items")
 
     # DB-backed rate limiting
     LOGIN_RATE_LIMIT = int(os.getenv("LOGIN_RATE_LIMIT", "10"))

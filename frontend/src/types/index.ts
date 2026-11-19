@@ -113,7 +113,8 @@ export interface ReportPayload {
   longitude?: number
   event_date: string
   event_time?: string
-  image_path?: string
+  image_url?: string
+  image_public_id?: string
   custody_info?: string
 }
 

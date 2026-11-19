@@ -62,14 +62,14 @@ export async function markAllNotificationsRead(): Promise<void> {
 
 export async function uploadImage(
   file: File,
-): Promise<{ filename: string; url: string }> {
+): Promise<{ url: string; public_id: string }> {
   const form = new FormData()
   form.append('file', file)
-  const res = await api.post<ApiEnvelope<{ filename: string; url: string }>>(
+  const res = await api.post<ApiEnvelope<{ url: string; public_id: string }>>(
     '/uploads',
     form,
   )
-  return res.data.data as { filename: string; url: string }
+  return res.data.data as { url: string; public_id: string }
 }
 
 export async function getMatches(): Promise<Match[]> {

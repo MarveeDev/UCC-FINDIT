@@ -9,10 +9,19 @@ duplicating logic or creating import cycles.
 from app.items import services as item_services
 from app.matching import services as matching_services
 from app.notifications import services as notification_services
+from app.uploads.cloudinary_service import delete_image
 
 
 def submit_report(reporter, cleaned):
-    report = item_services.create_report(reporter, cleaned)
+    try:
+        report = item_services.create_report(reporter, cleaned)
+    except Exception:
+        # Roll back any newly uploaded image if the report could not be
+        # persisted, so we don't leave an orphaned Cloudinary asset behind.
+        public_id = cleaned.get("image_public_id")
+        if public_id:
+            delete_image(public_id)
+        raise
     run_side_effects(report)
     return report
 

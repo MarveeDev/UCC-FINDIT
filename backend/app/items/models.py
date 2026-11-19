@@ -66,6 +66,8 @@ class ItemReport(db.Model):
     event_date = db.Column(db.Date, nullable=False)
     event_time = db.Column(db.Time, nullable=True)
     image_path = db.Column(db.String(255), nullable=True)
+    image_url = db.Column(db.String(512), nullable=True)
+    image_public_id = db.Column(db.String(255), nullable=True)
     custody_info = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(32), nullable=False, default=ItemStatus.OPEN)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)

@@ -41,6 +41,8 @@ def validate_report(data):
     identifying = (data.get("identifying_characteristics") or "").strip() or None
     custody = (data.get("custody_info") or "").strip() or None
     image_path = (data.get("image_path") or "").strip() or None
+    image_url = (data.get("image_url") or "").strip() or None
+    image_public_id = (data.get("image_public_id") or "").strip() or None
     location_id = data.get("location_id")
     event_date_raw = data.get("event_date")
     event_time_raw = data.get("event_time")
@@ -69,6 +71,13 @@ def validate_report(data):
         errors["colour"] = "Colour is too long"
     if identifying and len(identifying) > 1000:
         errors["identifying_characteristics"] = "Identifying characteristics are too long"
+
+    # Cloudinary image metadata (URL + public ID) must be supplied together and
+    # must point at Cloudinary, never an arbitrary remote URL.
+    if bool(image_url) != bool(image_public_id):
+        errors["image_url"] = "image_url and image_public_id must be provided together"
+    if image_url and not image_url.startswith("https://res.cloudinary.com/"):
+        errors["image_url"] = "Image URL must be a Cloudinary URL"
 
     event_date = _parse_date(event_date_raw)
     if not event_date_raw:
@@ -116,6 +125,8 @@ def validate_report(data):
         "identifying_characteristics": identifying,
         "custody_info": custody,
         "image_path": image_path,
+        "image_url": image_url,
+        "image_public_id": image_public_id,
         "location_id": location_id,
         "location_description": location_description,
         "latitude": latitude,
