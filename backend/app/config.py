@@ -106,7 +106,7 @@ class Config:
     # DB-backed rate limiting
     LOGIN_RATE_LIMIT = int(os.getenv("LOGIN_RATE_LIMIT", "10"))
     LOGIN_RATE_WINDOW_SECONDS = int(os.getenv("LOGIN_RATE_WINDOW_SECONDS", "60"))
-    REGISTER_RATE_LIMIT = int(os.getenv("REGISTER_RATE_LIMIT", "3"))
+    REGISTER_RATE_LIMIT = int(os.getenv("REGISTER_RATE_LIMIT", "10"))
     REGISTER_RATE_WINDOW_SECONDS = int(os.getenv("REGISTER_RATE_WINDOW_SECONDS", "3600"))
     VERIFY_RATE_LIMIT = int(os.getenv("VERIFY_RATE_LIMIT", "5"))
     VERIFY_RATE_WINDOW_SECONDS = int(os.getenv("VERIFY_RATE_WINDOW_SECONDS", "60"))

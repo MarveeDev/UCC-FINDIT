@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from app.config import config_by_name, ensure_secure_secrets
 from app.extensions import cors, db, jwt, migrate
@@ -29,6 +30,12 @@ def create_app(config_name="default"):
     _register_blueprints(app)
     _register_models()
     _register_error_handlers(app)
+
+    # Render's reverse proxy connects via loopback and forwards the real client
+    # IP in X-Forwarded-For. Trust exactly one proxy so request.remote_addr
+    # reflects the client; ProxyFix reads the right-most trusted hop and ignores
+    # any client-supplied (left-most) entries.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     return app
 
