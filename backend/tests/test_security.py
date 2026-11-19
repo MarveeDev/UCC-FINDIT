@@ -37,6 +37,15 @@ def test_production_succeeds_with_strong_secrets(monkeypatch):
     assert app.config["SECRET_KEY"] == "x" * 48
 
 
+def test_engine_options_configured(monkeypatch):
+    monkeypatch.setenv("SECRET_KEY", "x" * 48)
+    monkeypatch.setenv("JWT_SECRET_KEY", "y" * 48)
+    app = create_app("production")
+    opts = app.config["SQLALCHEMY_ENGINE_OPTIONS"]
+    assert opts["pool_pre_ping"] is True
+    assert opts["pool_recycle"] == 300
+
+
 def test_jwt_secret_falls_back_to_secret_key(monkeypatch):
     monkeypatch.setenv("SECRET_KEY", "z" * 48)
     monkeypatch.delenv("JWT_SECRET_KEY", raising=False)

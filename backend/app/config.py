@@ -79,6 +79,14 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Keep pooled PostgreSQL connections healthy: managed PostgreSQL providers
+    # (Render/Neon) close idle SSL connections, so verify liveness before use
+    # and recycle connections before they exceed the server's idle timeout.
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+    }
+
     CORS_ORIGINS = _list(os.getenv("CORS_ORIGINS"), ["http://localhost:5174"])
 
     # UCC email domain. Enforcement is OFF by default until the official

@@ -1,4 +1,5 @@
 from flask import jsonify
+from sqlalchemy.exc import OperationalError
 from werkzeug.exceptions import HTTPException
 
 
@@ -48,6 +49,15 @@ def register_error_handlers(app):
     @app.errorhandler(HTTPException)
     def handle_http_exception(error):
         return fail(error.name, status=error.code)
+
+    @app.errorhandler(OperationalError)
+    def handle_db_operational_error(error):
+        # Log the connection error type (not secrets or SQL) for diagnostics
+        # and return a safe, retryable message to the client.
+        app.logger.error("Database connection error: %s", type(error).__name__)
+        return fail(
+            "Service temporarily unavailable. Please try again later.", status=503
+        )
 
     @app.errorhandler(Exception)
     def handle_unexpected(error):
