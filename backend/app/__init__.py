@@ -22,6 +22,7 @@ def create_app(config_name="default"):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    _init_oauth(app)
     cors.init_app(
         app, resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}}
     )
@@ -39,6 +40,12 @@ def create_app(config_name="default"):
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
     return app
+
+
+def _init_oauth(app):
+    from app.auth.oauth import init_oauth
+
+    init_oauth(app)
 
 
 def _register_cli_commands(app):

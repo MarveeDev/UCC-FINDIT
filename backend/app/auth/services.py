@@ -36,10 +36,10 @@ def login(email, password):
         raise ApiError("Invalid email or password", status=401)
     if not user.is_active:
         raise ApiError("This account has been deactivated", status=403)
-    return {"user": serialize_user(user), "access_token": _create_token(user)}
+    return {"user": serialize_user(user), "access_token": create_token(user)}
 
 
-def _create_token(user):
+def create_token(user):
     return create_access_token(
         identity=str(user.id),
         additional_claims={"role": user.role, "email": user.email},

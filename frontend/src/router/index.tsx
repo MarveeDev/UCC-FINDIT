@@ -7,6 +7,7 @@ import { ClaimFormPage } from '../pages/ClaimFormPage'
 import { ClaimsPage } from '../pages/ClaimsPage'
 import { CustodyPage } from '../pages/CustodyPage'
 import { FeedPage } from '../pages/FeedPage'
+import { GoogleCallbackPage } from '../pages/GoogleCallbackPage'
 import { InspectionsPage } from '../pages/InspectionsPage'
 import { ItemDetailPage } from '../pages/ItemDetailPage'
 import { LoginPage } from '../pages/LoginPage'
@@ -26,6 +27,7 @@ import { UnassignedReportsPage } from '../pages/UnassignedReportsPage'
 export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
+  { path: '/auth/google/callback', element: <GoogleCallbackPage /> },
   {
     element: <ProtectedRoute />,
     children: [

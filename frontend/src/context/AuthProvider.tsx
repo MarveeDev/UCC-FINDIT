@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import api from '../lib/api'
 import { clearSession, getStoredUser, getToken, setSession } from '../lib/auth'
 import type { ApiEnvelope, AuthResult, User } from '../types'
@@ -51,8 +51,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
+  const completeGoogleLogin = useCallback(async (code: string): Promise<void> => {
+    const res = await api.post<ApiEnvelope<AuthResult>>('/auth/google/exchange', {
+      code,
+    })
+    const result = res.data.data
+    if (result) {
+      setSession(result.access_token, result.user)
+      setUser(result.user)
+    }
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, register, login, completeGoogleLogin, logout }}
+    >
       {children}
     </AuthContext.Provider>
   )

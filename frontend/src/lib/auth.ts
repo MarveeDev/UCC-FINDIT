@@ -26,3 +26,8 @@ export function getStoredUser(): User | null {
     return null
   }
 }
+
+export function getGoogleSignInUrl(): string {
+  const base = (import.meta.env.VITE_API_BASE_URL ?? '/api/v1').replace(/\/+$/, '')
+  return `${base}/auth/google`
+}

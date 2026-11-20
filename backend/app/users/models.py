@@ -37,3 +37,20 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.email} ({self.role})>"
+
+
+class AuthExchange(db.Model):
+    """Short-lived, single-use code exchanged between the Google OAuth callback
+    and the single-page app. The code is opaque and never carries a JWT."""
+
+    __tablename__ = "auth_exchanges"
+
+    code = db.Column(db.String(64), primary_key=True)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+    consumed_at = db.Column(db.DateTime, nullable=True)

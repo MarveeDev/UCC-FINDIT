@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthShell } from '../components/AuthShell'
+import { GoogleSignInButton } from '../components/GoogleSignInButton'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { useAuth } from '../context/authContext'
@@ -101,6 +102,14 @@ export function RegisterPage() {
           {submitting ? 'Creating account…' : 'Create account'}
         </Button>
       </form>
+      <div className="mt-5 flex items-center gap-3">
+        <div className="h-px flex-1 bg-midnight/10" />
+        <span className="text-xs text-midnight/50">or</span>
+        <div className="h-px flex-1 bg-midnight/10" />
+      </div>
+      <div className="mt-4">
+        <GoogleSignInButton />
+      </div>
     </AuthShell>
   )
 }

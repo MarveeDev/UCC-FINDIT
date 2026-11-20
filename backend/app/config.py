@@ -121,6 +121,13 @@ class Config:
     CLOUDINARY_API_SECRET = _secret(os.getenv("CLOUDINARY_API_SECRET"))
     CLOUDINARY_FOLDER = os.getenv("CLOUDINARY_FOLDER", "ucc-findit/items")
 
+    # Google Sign-In (OAuth 2.0 / OpenID Connect)
+    GOOGLE_CLIENT_ID = _secret(os.getenv("GOOGLE_CLIENT_ID"))
+    GOOGLE_CLIENT_SECRET = _secret(os.getenv("GOOGLE_CLIENT_SECRET"))
+    GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5174")
+    GOOGLE_EXCHANGE_TTL_SECONDS = int(os.getenv("GOOGLE_EXCHANGE_TTL_SECONDS", "120"))
+
     # DB-backed rate limiting
     LOGIN_RATE_LIMIT = int(os.getenv("LOGIN_RATE_LIMIT", "10"))
     LOGIN_RATE_WINDOW_SECONDS = int(os.getenv("LOGIN_RATE_WINDOW_SECONDS", "60"))

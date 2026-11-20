@@ -13,6 +13,7 @@ export interface AuthContextValue {
   loading: boolean
   register: (payload: RegisterPayload) => Promise<void>
   login: (email: string, password: string) => Promise<void>
+  completeGoogleLogin: (code: string) => Promise<void>
   logout: () => void
 }
 
