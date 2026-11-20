@@ -104,3 +104,42 @@ def test_deactivate_location_hides_from_listing(client):
         for l in client.get("/api/v1/locations", headers=student_headers).get_json()["data"]
     ]
     assert "Old Lab" not in names
+
+
+def test_manager_reassignment_moves_to_single_theatre(client):
+    admin = create_user("admin@ucc.edu.gh", "SUPER_ADMIN")
+    admin_headers = auth_header(client, admin.email)
+    loc_a = client.post(
+        "/api/v1/locations", json={"name": "Theatre A"}, headers=admin_headers
+    ).get_json()["data"]
+    loc_b = client.post(
+        "/api/v1/locations", json={"name": "Theatre B"}, headers=admin_headers
+    ).get_json()["data"]
+
+    manager = create_user("manager@ucc.edu.gh", "LOCATION_MANAGER")
+    assert (
+        client.post(
+            f"/api/v1/locations/{loc_a['id']}/managers",
+            json={"user_id": manager.id},
+            headers=admin_headers,
+        ).status_code
+        == 201
+    )
+    # Reassigning to theatre B atomically revokes theatre A.
+    assert (
+        client.post(
+            f"/api/v1/locations/{loc_b['id']}/managers",
+            json={"user_id": manager.id},
+            headers=admin_headers,
+        ).status_code
+        == 201
+    )
+
+    managers_a = client.get(
+        f"/api/v1/locations/{loc_a['id']}/managers", headers=admin_headers
+    ).get_json()["data"]
+    managers_b = client.get(
+        f"/api/v1/locations/{loc_b['id']}/managers", headers=admin_headers
+    ).get_json()["data"]
+    assert all(m["id"] != manager.id for m in managers_a)
+    assert any(m["id"] == manager.id for m in managers_b)

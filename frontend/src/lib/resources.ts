@@ -1,5 +1,6 @@
 import api from './api'
 import type {
+  Administrator,
   AnalyticsData,
   ApiEnvelope,
   AuditLog,
@@ -17,6 +18,8 @@ import type {
   ReportPayload,
   ReportSummary,
   StaffMember,
+  SuperAdminOverview,
+  TheatreSummary,
   User,
 } from '../types'
 
@@ -311,4 +314,41 @@ export async function assignReport(
     { location_id: locationId },
   )
   return res.data.data as ReportSummary
+}
+
+export async function getSuperAdminOverview(): Promise<SuperAdminOverview> {
+  const res = await api.get<ApiEnvelope<SuperAdminOverview>>('/admin/overview')
+  return res.data.data as SuperAdminOverview
+}
+
+export async function getAdministrators(): Promise<Administrator[]> {
+  const res = await api.get<ApiEnvelope<Administrator[]>>('/admin/administrators')
+  return res.data.data ?? []
+}
+
+export async function getTheatres(): Promise<TheatreSummary[]> {
+  const res = await api.get<ApiEnvelope<TheatreSummary[]>>('/admin/theatres')
+  return res.data.data ?? []
+}
+
+export async function createTheatre(payload: {
+  name: string
+  description?: string
+}): Promise<CampusLocation> {
+  const res = await api.post<ApiEnvelope<CampusLocation>>('/locations', payload)
+  return res.data.data as CampusLocation
+}
+
+export async function assignManager(
+  locationId: number,
+  userId: number,
+): Promise<void> {
+  await api.post(`/locations/${locationId}/managers`, { user_id: userId })
+}
+
+export async function removeManager(
+  locationId: number,
+  userId: number,
+): Promise<void> {
+  await api.delete(`/locations/${locationId}/managers/${userId}`)
 }

@@ -83,22 +83,48 @@ def update_location(
     return location
 
 
-def assign_manager(location_id, user_id):
+def assign_manager(location_id, user_id, actor_id=None):
     location = get_location(location_id)
     user = db.session.get(User, user_id)
     if user is None:
         raise ApiError("User not found", status=404)
-    existing = LocationManager.query.filter_by(
-        user_id=user_id, location_id=location_id
-    ).first()
+    if user.role not in (UserRole.LOCATION_MANAGER, UserRole.SUPER_ADMIN):
+        raise ApiError("Only administrators can be assigned to a theatre", status=422)
+
+    existing = LocationManager.query.filter_by(user_id=user_id).first()
+    if existing and existing.location_id == location_id:
+        raise ApiError("This administrator is already assigned to this theatre", status=409)
+
+    # One administrator may manage only one theatre: reassignment atomically
+    # revokes the previous assignment before granting the new one.
+    previous_location_id = existing.location_id if existing else None
     if existing:
-        raise ApiError("This manager is already assigned to this location", status=409)
+        db.session.delete(existing)
     db.session.add(LocationManager(user_id=user_id, location_id=location_id))
     db.session.commit()
+
+    from app.audit.services import (
+        MANAGER_ASSIGNED,
+        MANAGER_REASSIGNED,
+        record_audit,
+    )
+
+    action = MANAGER_REASSIGNED if previous_location_id is not None else MANAGER_ASSIGNED
+    record_audit(
+        actor_id,
+        action,
+        "manager_assignment",
+        user_id,
+        location_id,
+        metadata={
+            "previous_location_id": previous_location_id,
+            "new_location_id": location_id,
+        },
+    )
     return location
 
 
-def remove_manager(location_id, user_id):
+def remove_manager(location_id, user_id, actor_id=None):
     get_location(location_id)
     assignment = LocationManager.query.filter_by(
         user_id=user_id, location_id=location_id
@@ -107,6 +133,17 @@ def remove_manager(location_id, user_id):
         raise ApiError("Manager assignment not found", status=404)
     db.session.delete(assignment)
     db.session.commit()
+
+    from app.audit.services import MANAGER_REMOVED, record_audit
+
+    record_audit(
+        actor_id,
+        MANAGER_REMOVED,
+        "manager_assignment",
+        user_id,
+        location_id,
+        metadata={"previous_location_id": location_id, "new_location_id": None},
+    )
 
 
 def assign_staff(location_id, user_id):

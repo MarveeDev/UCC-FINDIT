@@ -13,6 +13,24 @@ from app.utils.decorators import role_required
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/v1/admin")
 
 
+@admin_bp.get("/overview")
+@role_required(UserRole.SUPER_ADMIN)
+def super_admin_overview():
+    return ok(data=admin_services.get_super_admin_overview())
+
+
+@admin_bp.get("/administrators")
+@role_required(UserRole.SUPER_ADMIN)
+def list_administrators():
+    return ok(data=admin_services.list_administrators())
+
+
+@admin_bp.get("/theatres")
+@role_required(UserRole.SUPER_ADMIN)
+def list_theatres():
+    return ok(data=admin_services.list_theatres())
+
+
 @admin_bp.get("/unassigned-reports")
 @role_required(UserRole.SUPER_ADMIN)
 def list_unassigned_reports():

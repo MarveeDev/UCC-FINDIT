@@ -80,7 +80,9 @@ def add_manager(location_id):
     user_id = data.get("user_id")
     if user_id is None:
         return fail("user_id is required", status=422)
-    location = location_services.assign_manager(location_id, int(user_id))
+    location = location_services.assign_manager(
+        location_id, int(user_id), int(get_jwt_identity())
+    )
     return ok(
         data=location_services.serialize_location(location),
         message="Manager assigned",
@@ -91,7 +93,7 @@ def add_manager(location_id):
 @locations_bp.delete("/<int:location_id>/managers/<int:user_id>")
 @role_required(UserRole.SUPER_ADMIN)
 def remove_manager(location_id, user_id):
-    location_services.remove_manager(location_id, user_id)
+    location_services.remove_manager(location_id, user_id, int(get_jwt_identity()))
     return ok(message="Manager unassigned")
 
 

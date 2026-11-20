@@ -20,6 +20,7 @@ import { QrRecoveryPage } from '../pages/QrRecoveryPage'
 import { RegisterPage } from '../pages/RegisterPage'
 import { ReportPage } from '../pages/ReportPage'
 import { StaffManagementPage } from '../pages/StaffManagementPage'
+import { SuperAdminDashboardPage } from '../pages/SuperAdminDashboardPage'
 import { UnassignedReportsPage } from '../pages/UnassignedReportsPage'
 
 export const router = createBrowserRouter([
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
           { path: '/custody', element: <CustodyPage /> },
           { path: '/audit-logs', element: <AuditLogsPage /> },
           { path: '/analytics', element: <AnalyticsPage /> },
+          { path: '/admin', element: <SuperAdminDashboardPage /> },
           { path: '/admin/unassigned', element: <UnassignedReportsPage /> },
           { path: '/notifications', element: <NotificationsPage /> },
         ],

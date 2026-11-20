@@ -40,6 +40,36 @@ export interface CampusLocation {
   created_at: string | null
 }
 
+export interface SuperAdminOverview {
+  total_students: number
+  total_administrators: number
+  total_staff: number
+  total_theatres: number
+  total_lost: number
+  total_found: number
+  pending_claims: number
+  recovered: number
+  unassigned: number
+}
+
+export interface Administrator {
+  user: User
+  location_id: number | null
+  location_name: string | null
+}
+
+export interface TheatreSummary {
+  id: number
+  name: string
+  description: string | null
+  is_active: boolean
+  administrator_count: number
+  staff_count: number
+  lost_count: number
+  found_count: number
+  administrators: User[]
+}
+
 export interface ReportSummary {
   id: number
   report_type: ReportType
